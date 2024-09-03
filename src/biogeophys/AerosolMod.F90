@@ -29,21 +29,29 @@ module AerosolMod
   !
   type, public :: aerosol_type
      real(r8), pointer, public  :: mss_bcpho_col(:,:)      ! mass of hydrophobic BC in snow (col,lyr)     [kg]
+     real(r8), pointer, public  :: mss_bcpho_col_old(:,:) 
      real(r8), pointer, public  :: mss_bcphi_col(:,:)      ! mass of hydrophillic BC in snow (col,lyr)    [kg]
+     real(r8), pointer, public  :: mss_bcphi_col_old(:,:) 
      real(r8), pointer, public  :: mss_bctot_col(:,:)      ! total mass of BC in snow (pho+phi) (col,lyr) [kg]
      real(r8), pointer, public  :: mss_bc_col_col(:)       ! column-integrated mass of total BC           [kg]
      real(r8), pointer, public  :: mss_bc_top_col(:)       ! top-layer mass of total BC                   [kg]
 
      real(r8), pointer, public  :: mss_ocpho_col(:,:)      ! mass of hydrophobic OC in snow (col,lyr)     [kg]
+     real(r8), pointer, public  :: mss_ocpho_col_old(:,:) 
      real(r8), pointer, public  :: mss_ocphi_col(:,:)      ! mass of hydrophillic OC in snow (col,lyr)    [kg]
+     real(r8), pointer, public  :: mss_ocphi_col_old(:,:) 
      real(r8), pointer, public  :: mss_octot_col(:,:)      ! total mass of OC in snow (pho+phi) (col,lyr) [kg]
      real(r8), pointer, public  :: mss_oc_col_col(:)       ! column-integrated mass of total OC           [kg]
      real(r8), pointer, public  :: mss_oc_top_col(:)       ! top-layer mass of total OC                   [kg]
 
      real(r8), pointer, public  :: mss_dst1_col(:,:)       ! mass of dust species 1 in snow (col,lyr)     [kg]
+     real(r8), pointer, public  :: mss_dst1_col_old(:,:) 
      real(r8), pointer, public  :: mss_dst2_col(:,:)       ! mass of dust species 2 in snow (col,lyr)     [kg]
+     real(r8), pointer, public  :: mss_dst2_col_old(:,:)  
      real(r8), pointer, public  :: mss_dst3_col(:,:)       ! mass of dust species 3 in snow (col,lyr)     [kg]
+     real(r8), pointer, public  :: mss_dst3_col_old(:,:)
      real(r8), pointer, public  :: mss_dst4_col(:,:)       ! mass of dust species 4 in snow (col,lyr)     [kg]
+     real(r8), pointer, public  :: mss_dst4_col_old(:,:)  
      real(r8), pointer, public  :: mss_dsttot_col(:,:)     ! total mass of dust in snow (col,lyr)         [kg]
      real(r8), pointer, public  :: mss_dst_col_col(:)      ! column-integrated mass of dust in snow       [kg]
      real(r8), pointer, public  :: mss_dst_top_col(:)      ! top-layer mass of dust in snow               [kg]
@@ -117,6 +125,10 @@ contains
   !-----------------------------------------------------------------------
   subroutine InitAllocate(this, bounds)
     !
+    ! !USES:
+    use spmdMod    , only : masterproc
+    use clm_varctl    , only : iulog
+    !
     ! !ARGUMENTS:
     class(aerosol_type) :: this
     type(bounds_type), intent(in) :: bounds  
@@ -126,6 +138,10 @@ contains
     !---------------------------------------------------------------------
 
     begc = bounds%begc; endc= bounds%endc
+
+    if (masterproc) then
+      write(iulog,*) "allocate AerosolMod"
+    end if
 
     allocate(this%flx_dst_dep_dry1_col (begc:endc))              ; this%flx_dst_dep_dry1_col (:)   = nan
     allocate(this%flx_dst_dep_wet1_col (begc:endc))              ; this%flx_dst_dep_wet1_col (:)   = nan

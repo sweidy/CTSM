@@ -29,9 +29,12 @@ module LakeStateType
      real(r8), pointer :: ks_col            (:)   ! col coefficient for calculation of decay of eddy diffusivity with depth
      real(r8), pointer :: ws_col            (:)   ! col surface friction velocity (m/s)
      real(r8), pointer :: ust_lake_col      (:)   ! col friction velocity (m/s)          
+     real(r8), pointer :: ust_lake_col_old      (:) 
      real(r8), pointer :: betaprime_col     (:)   ! col effective beta: sabg_lyr(p,jtop) for snow layers, beta otherwise
      real(r8), pointer :: savedtke1_col     (:)   ! col top level eddy conductivity from previous timestep (W/mK)
+     real(r8), pointer :: savedtke1_col_old     (:) 
      real(r8), pointer :: lake_icefrac_col  (:,:) ! col mass fraction of lake layer that is frozen
+     real(r8), pointer :: lake_icefrac_col_old  (:,:)
      real(r8), pointer :: lake_icefracsurf_col(:) ! col mass fraction of surface lake layer that is frozen
      real(r8), pointer :: lake_icethick_col (:)   ! col ice thickness (m) (integrated if lakepuddling)
      real(r8), pointer :: lakeresist_col    (:)   ! col [s/m] (Needed for calc. of grnd_ch4_cond)
@@ -71,6 +74,8 @@ contains
     ! !USES:
     use shr_infnan_mod, only: nan => shr_infnan_nan, assignment(=)
     use clm_varpar    , only: nlevlak, nlevsno
+    use spmdMod    , only : masterproc
+    use clm_varctl    , only : iulog
     !
     ! !ARGUMENTS:
     class(lakestate_type) :: this
@@ -88,6 +93,10 @@ contains
 
     begp = bounds%begp; endp= bounds%endp
     begc = bounds%begc; endc = bounds%endc
+
+    if (masterproc) then
+     write(iulog,*) "allocate LakeStateType"
+    end if
 
     allocate(this%etal_col           (begc:endc))           ; this%etal_col           (:)   = nan
     allocate(this%lakefetch_col      (begc:endc))           ; this%lakefetch_col      (:)   = nan

@@ -107,8 +107,11 @@ module  PhotosynthesisMod
      real(r8), pointer, private :: tpu_z_phs_patch   (:,:,:) ! patch triose phosphate utilization rate (umol CO2/m**2/s)
      real(r8), pointer, private :: gs_mol_sun_patch  (:,:) ! patch sunlit leaf stomatal conductance (umol H2O/m**2/s)
      real(r8), pointer, private :: gs_mol_sha_patch  (:,:) ! patch shaded leaf stomatal conductance (umol H2O/m**2/s)
+     real(r8), pointer, private :: gs_mol_sha_patch_old  (:,:) 
      real(r8), pointer, private :: gs_mol_sun_ln_patch (:,:) ! patch sunlit leaf stomatal conductance averaged over 1 hour before to 1 hour after local noon (umol H2O/m**2/s)
+     real(r8), pointer, private :: gs_mol_sun_ln_patch_old (:,:) 
      real(r8), pointer, private :: gs_mol_sha_ln_patch (:,:) ! patch shaded leaf stomatal conductance averaged over 1 hour before to 1 hour after local noon (umol H2O/m**2/s)
+     real(r8), pointer, private :: gs_mol_sha_ln_patch_old (:,:) 
      real(r8), pointer, private :: ac_patch          (:,:) ! patch Rubisco-limited gross photosynthesis (umol CO2/m**2/s)
      real(r8), pointer, private :: aj_patch          (:,:) ! patch RuBP-limited gross photosynthesis (umol CO2/m**2/s)
      real(r8), pointer, private :: ap_patch          (:,:) ! patch product-limited (C3) or CO2-limited (C4) gross photosynthesis (umol CO2/m**2/s)
@@ -157,6 +160,7 @@ module  PhotosynthesisMod
      real(r8), pointer, private :: fpsn_wp_patch     (:)   ! patch product-limited photosynthesis (umol CO2/m**2 ground/s)
 
      real(r8), pointer, public  :: lnca_patch        (:)   ! top leaf layer leaf N concentration (gN leaf/m^2)
+     real(r8), pointer, public  :: lnca_patch_old        (:)
 
      real(r8), pointer, public  :: lmrsun_patch      (:)   ! patch sunlit leaf maintenance respiration rate               (umol CO2/m**2/s)
      real(r8), pointer, public  :: lmrsha_patch      (:)   ! patch shaded leaf maintenance respiration rate               (umol CO2/m**2/s)
@@ -171,17 +175,25 @@ module  PhotosynthesisMod
      real(r8), pointer, public  :: rssun_patch       (:)   ! patch sunlit stomatal resistance (s/m)
      real(r8), pointer, public  :: rssha_patch       (:)   ! patch shaded stomatal resistance (s/m)
      real(r8), pointer, public  :: luvcmax25top_patch (:)   ! vcmax25 !     (umol/m2/s)
+     real(r8), pointer, public  :: luvcmax25top_patch_old (:) 
      real(r8), pointer, public  :: lujmax25top_patch  (:)   ! vcmax25 (umol/m2/s)
+     real(r8), pointer, public  :: lujmax25top_patch_old  (:) 
      real(r8), pointer, public  :: lutpu25top_patch   (:)   ! vcmax25 (umol/m2/s)
-!!
+     real(r8), pointer, public  :: lutpu25top_patch_old   (:)
+     !!
 
 
      ! LUNA specific variables
      real(r8), pointer, public  :: vcmx25_z_patch    (:,:) ! patch  leaf Vc,max25 (umol CO2/m**2/s) for canopy layer 
+     real(r8), pointer, public  :: vcmx25_z_patch_old    (:,:)
      real(r8), pointer, public  :: jmx25_z_patch     (:,:) ! patch  leaf Jmax25 (umol electron/m**2/s) for canopy layer 
+     real(r8), pointer, public  :: jmx25_z_patch_old     (:,:) 
      real(r8), pointer, public  :: pnlc_z_patch      (:,:) ! patch proportion of leaf nitrogen allocated for light capture for canopy layer
+     real(r8), pointer, public  :: pnlc_z_patch_old      (:,:) 
      real(r8), pointer, public  :: enzs_z_patch      (:,:) ! enzyme decay status 1.0-fully active; 0-all decayed during stress
+     real(r8), pointer, public  :: enzs_z_patch_old      (:,:) 
      real(r8), pointer, public  :: fpsn24_patch      (:)   ! 24 hour mean patch photosynthesis (umol CO2/m**2 ground/day)
+     real(r8), pointer, public  :: fpsn24_patch_old      (:) 
 
      ! Logical switches for different options
      logical, public  :: rootstem_acc                      ! Respiratory acclimation for roots and stems
@@ -227,6 +239,10 @@ contains
   !------------------------------------------------------------------------
   subroutine InitAllocate(this, bounds)
     !
+    ! !USES:
+   use spmdMod    , only : masterproc
+   use clm_varctl    , only : iulog
+    !
     ! !ARGUMENTS:
     class(photosyns_type) :: this
     type(bounds_type), intent(in) :: bounds
@@ -238,6 +254,10 @@ contains
 
     begp = bounds%begp; endp= bounds%endp
     begc = bounds%begc; endc= bounds%endc
+    
+    if (masterproc) then
+      write(iulog,*) "allocate PhotosynthesisMod"
+    end if
 
     allocate(this%c3flag_patch      (begp:endp))             ; this%c3flag_patch      (:)     =.false.
     allocate(this%ac_phs_patch      (begp:endp,2,1:nlevcan)) ; this%ac_phs_patch      (:,:,:) = nan

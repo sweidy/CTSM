@@ -86,6 +86,7 @@ module WaterfluxType
      real(r8), pointer :: qflx_snomelt_col         (:)   ! col snow melt (mm H2O /s)
      real(r8), pointer :: qflx_snomelt_lyr_col     (:,:) ! col snow melt in each layer (mm H2O /s)
      real(r8), pointer :: qflx_snow_drain_col      (:)   ! col drainage from snow pack
+     real(r8), pointer :: qflx_snow_drain_col_old      (:) 
      real(r8), pointer :: qflx_qrgwl_col           (:)   ! col qflx_surf at glaciers, wetlands, lakes
      real(r8), pointer :: qflx_runoff_rain_to_snow_conversion_col(:) ! col runoff flux from rain-to-snow conversion, when this conversion leads to immediate runoff rather than snow (mm H2O /s)
      real(r8), pointer :: qflx_runoff_col          (:)   ! col total runoff (qflx_drain+qflx_surf+qflx_qrgwl) (mm H2O /s)
@@ -95,6 +96,7 @@ module WaterfluxType
      real(r8), pointer :: qflx_ice_runoff_xs_col   (:)   ! col solid runoff from excess ice in soil (mm H2O /s)
      real(r8), pointer :: qflx_rsub_sat_col        (:)   ! col soil saturation excess [mm/s]
      real(r8), pointer :: qflx_snofrz_lyr_col      (:,:) ! col snow freezing rate (positive definite) (col,lyr) [kg m-2 s-1]
+     real(r8), pointer :: qflx_snofrz_lyr_col_old      (:,:) 
      real(r8), pointer :: qflx_snofrz_col          (:)   ! col column-integrated snow freezing rate (positive definite) (col) [kg m-2 s-1]
      real(r8), pointer :: qflx_drain_vr_col        (:,:) ! col liquid water losted as drainage (m /time step)
      real(r8), pointer :: snow_sources_col         (:)   ! col snow sources (mm H2O/s)
@@ -102,7 +104,9 @@ module WaterfluxType
 
      ! Dynamic land cover change
      real(r8), pointer :: qflx_liq_dynbal_grc      (:)   ! grc liq dynamic land cover change conversion runoff flux
+     real(r8), pointer :: qflx_liq_dynbal_grc_old      (:) 
      real(r8), pointer :: qflx_ice_dynbal_grc      (:)   ! grc ice dynamic land cover change conversion runoff flux
+     real(r8), pointer :: qflx_ice_dynbal_grc_old      (:)
 
      ! Objects that help convert once-per-year dynamic land cover changes into fluxes
      ! that are dribbled throughout the year
@@ -150,6 +154,8 @@ contains
     ! Initialize module data structure
     !
     ! !USES:
+    use spmdMod    , only : masterproc
+    use clm_varctl    , only : iulog
     !
     ! !ARGUMENTS:
     class(waterflux_type) :: this
@@ -164,6 +170,10 @@ contains
     begp = bounds%begp; endp= bounds%endp
     begc = bounds%begc; endc= bounds%endc
     begg = bounds%begg; endg= bounds%endg
+
+    if (masterproc) then
+     write(iulog,*) "allocate WaterfluxType"
+    end if
 
     allocate(this%qflx_prec_intr_patch     (begp:endp))              ; this%qflx_prec_intr_patch     (:)   = nan
     allocate(this%qflx_prec_grnd_patch     (begp:endp))              ; this%qflx_prec_grnd_patch     (:)   = nan

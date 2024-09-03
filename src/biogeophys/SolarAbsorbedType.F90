@@ -25,7 +25,9 @@ module SolarAbsorbedType
      real(r8), pointer :: fsa_u_patch            (:)   ! patch urban solar radiation absorbed (total) (W/m**2)
      real(r8), pointer :: fsa_r_patch            (:)   ! patch rural solar radiation absorbed (total) (W/m**2)
      real(r8), pointer :: parsun_z_patch         (:,:) ! patch absorbed PAR for sunlit leaves in canopy layer (W/m**2) 
+     real(r8), pointer :: parsun_z_patch_old         (:,:) 
      real(r8), pointer :: parsha_z_patch         (:,:) ! patch absorbed PAR for shaded leaves in canopy layer (W/m**2) 
+     real(r8), pointer :: parsha_z_patch_old         (:,:) 
      real(r8), pointer :: par240d_z_patch        (:,:) ! 10-day running mean of daytime patch absorbed PAR for leaves in canopy layer (W/m**2) 
      real(r8), pointer :: par240x_z_patch        (:,:) ! 10-day running mean of maximum patch absorbed PAR for leaves in canopy layer (W/m**2)
      real(r8), pointer :: par24d_z_patch         (:,:) ! daily accumulated  absorbed PAR for leaves in canopy layer from midnight to current step(J/m**2) 
@@ -41,15 +43,25 @@ module SolarAbsorbedType
      real(r8), pointer :: sabv_patch             (:)   ! patch solar radiation absorbed by vegetation (W/m**2) 
 
      real(r8), pointer :: sabs_roof_dir_lun      (:,:) ! lun direct solar absorbed by roof per unit ground area per unit incident flux
+     real(r8), pointer :: sabs_roof_dir_lun_old      (:,:) 
      real(r8), pointer :: sabs_roof_dif_lun      (:,:) ! lun diffuse solar absorbed by roof per unit ground area per unit incident flux
+     real(r8), pointer :: sabs_roof_dif_lun_old      (:,:) 
      real(r8), pointer :: sabs_sunwall_dir_lun   (:,:) ! lun direct  solar absorbed by sunwall per unit wall area per unit incident flux
+     real(r8), pointer :: sabs_sunwall_dir_lun_old   (:,:) 
      real(r8), pointer :: sabs_sunwall_dif_lun   (:,:) ! lun diffuse solar absorbed by sunwall per unit wall area per unit incident flux
+     real(r8), pointer :: sabs_sunwall_dif_lun_old   (:,:) 
      real(r8), pointer :: sabs_shadewall_dir_lun (:,:) ! lun direct  solar absorbed by shadewall per unit wall area per unit incident flux
+     real(r8), pointer :: sabs_shadewall_dir_lun_old (:,:) 
      real(r8), pointer :: sabs_shadewall_dif_lun (:,:) ! lun diffuse solar absorbed by shadewall per unit wall area per unit incident flux
+     real(r8), pointer :: sabs_shadewall_dif_lun_old (:,:) 
      real(r8), pointer :: sabs_improad_dir_lun   (:,:) ! lun direct  solar absorbed by impervious road per unit ground area per unit incident flux
+     real(r8), pointer :: sabs_improad_dir_lun_old   (:,:) 
      real(r8), pointer :: sabs_improad_dif_lun   (:,:) ! lun diffuse solar absorbed by impervious road per unit ground area per unit incident flux
+     real(r8), pointer :: sabs_improad_dif_lun_old   (:,:) 
      real(r8), pointer :: sabs_perroad_dir_lun   (:,:) ! lun direct  solar absorbed by pervious road per unit ground area per unit incident flux
+     real(r8), pointer :: sabs_perroad_dir_lun_old   (:,:) 
      real(r8), pointer :: sabs_perroad_dif_lun   (:,:) ! lun diffuse solar absorbed by pervious road per unit ground area per unit incident flux
+     real(r8), pointer :: sabs_perroad_dif_lun_old   (:,:) 
 
      ! Currently needed by lake code 
      ! TODO (MV 8/20/2014) should be moved in the future
@@ -99,6 +111,8 @@ contains
     ! !USES:
     use shr_infnan_mod, only : nan => shr_infnan_nan, assignment(=)
     use clm_varpar    , only : nlevcan, nlevcan, numrad, nlevsno
+    use spmdMod    , only : masterproc
+    use clm_varctl    , only : iulog
     !
     ! !ARGUMENTS:
     class(solarabs_type) :: this
@@ -113,6 +127,10 @@ contains
     begp = bounds%begp; endp = bounds%endp
     begc = bounds%begc; endc = bounds%endc
     begl = bounds%begl; endl = bounds%endl
+
+    if (masterproc) then
+     write(iulog,*) "allocate SolarAbsorbedType"
+    end if
 
     allocate(this%fsa_patch              (begp:endp))              ; this%fsa_patch              (:)   = nan
     allocate(this%fsa_u_patch            (begp:endp))              ; this%fsa_u_patch            (:)   = nan

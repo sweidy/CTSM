@@ -18,8 +18,11 @@ module SurfaceAlbedoType
   type, public :: surfalb_type
 
      real(r8), pointer :: coszen_col           (:)   ! col cosine of solar zenith angle
+     real(r8), pointer :: coszen_col_old           (:) 
      real(r8), pointer :: albd_patch           (:,:) ! patch surface albedo (direct)   (numrad)                    
+     real(r8), pointer :: albd_patch_old           (:,:) 
      real(r8), pointer :: albi_patch           (:,:) ! patch surface albedo (diffuse)  (numrad)                    
+     real(r8), pointer :: albi_patch_old           (:,:) 
      real(r8), pointer :: albdSF_patch         (:,:) ! patch snow-free surface albedo (direct)   (numrad)
      real(r8), pointer :: albiSF_patch         (:,:) ! patch snow-free surface albedo (diffuse)  (numrad)
      real(r8), pointer :: albgrd_pur_col       (:,:) ! col pure snow ground direct albedo     (numrad)             
@@ -31,37 +34,67 @@ module SurfaceAlbedoType
      real(r8), pointer :: albgrd_dst_col       (:,:) ! col ground direct  albedo without dust (numrad)             
      real(r8), pointer :: albgri_dst_col       (:,:) ! col ground diffuse albedo without dust (numrad)             
      real(r8), pointer :: albgrd_col           (:,:) ! col ground albedo (direct)  (numrad)                        
+     real(r8), pointer :: albgrd_col_old           (:,:) 
      real(r8), pointer :: albgri_col           (:,:) ! col ground albedo (diffuse) (numrad)                        
+     real(r8), pointer :: albgri_col_old           (:,:) 
      real(r8), pointer :: albsod_col           (:,:) ! col soil albedo: direct  (col,bnd) [frc]                    
+     real(r8), pointer :: albsod_col_old           (:,:) 
      real(r8), pointer :: albsoi_col           (:,:) ! col soil albedo: diffuse (col,bnd) [frc]                    
+     real(r8), pointer :: albsoi_col_old           (:,:) 
      real(r8), pointer :: albsnd_hst_col       (:,:) ! col snow albedo, direct , for history files (col,bnd) [frc] 
+     real(r8), pointer :: albsnd_hst_col_old       (:,:) 
      real(r8), pointer :: albsni_hst_col       (:,:) ! col snow albedo, diffuse, for history files (col,bnd) [frc] 
+     real(r8), pointer :: albsni_hst_col_old       (:,:)
 
      real(r8), pointer :: ftdd_patch           (:,:) ! patch down direct flux below canopy per unit direct flx    (numrad)
+     real(r8), pointer :: ftdd_patch_old           (:,:) 
      real(r8), pointer :: ftid_patch           (:,:) ! patch down diffuse flux below canopy per unit direct flx   (numrad)
+     real(r8), pointer :: ftid_patch_old           (:,:) 
      real(r8), pointer :: ftii_patch           (:,:) ! patch down diffuse flux below canopy per unit diffuse flx  (numrad)
+     real(r8), pointer :: ftii_patch_old           (:,:) 
      real(r8), pointer :: fabd_patch           (:,:) ! patch flux absorbed by canopy per unit direct flux         (numrad)
+     real(r8), pointer :: fabd_patch_old           (:,:) 
      real(r8), pointer :: fabd_sun_patch       (:,:) ! patch flux absorbed by sunlit canopy per unit direct flux  (numrad)
+     real(r8), pointer :: fabd_sun_patch_old       (:,:) 
      real(r8), pointer :: fabd_sha_patch       (:,:) ! patch flux absorbed by shaded canopy per unit direct flux  (numrad)
+     real(r8), pointer :: fabd_sha_patch_old       (:,:) 
      real(r8), pointer :: fabi_patch           (:,:) ! patch flux absorbed by canopy per unit diffuse flux        (numrad)
+     real(r8), pointer :: fabi_patch_old           (:,:) 
      real(r8), pointer :: fabi_sun_patch       (:,:) ! patch flux absorbed by sunlit canopy per unit diffuse flux (numrad)
+     real(r8), pointer :: fabi_sun_patch_old       (:,:) 
      real(r8), pointer :: fabi_sha_patch       (:,:) ! patch flux absorbed by shaded canopy per unit diffuse flux (numrad)
+     real(r8), pointer :: fabi_sha_patch_old       (:,:) 
      real(r8), pointer :: fabd_sun_z_patch     (:,:) ! patch absorbed sunlit leaf direct  PAR (per unit lai+sai) for each canopy layer
+     real(r8), pointer :: fabd_sun_z_patch_old     (:,:) 
      real(r8), pointer :: fabd_sha_z_patch     (:,:) ! patch absorbed shaded leaf direct  PAR (per unit lai+sai) for each canopy layer
+     real(r8), pointer :: fabd_sha_z_patch_old     (:,:) 
      real(r8), pointer :: fabi_sun_z_patch     (:,:) ! patch absorbed sunlit leaf diffuse PAR (per unit lai+sai) for each canopy layer
+     real(r8), pointer :: fabi_sun_z_patch_old     (:,:) 
      real(r8), pointer :: fabi_sha_z_patch     (:,:) ! patch absorbed shaded leaf diffuse PAR (per unit lai+sai) for each canopy layer
+     real(r8), pointer :: fabi_sha_z_patch_old     (:,:) 
      real(r8), pointer :: flx_absdv_col        (:,:) ! col absorbed flux per unit incident direct flux:  VIS (col,lyr) [frc]
+     real(r8), pointer :: flx_absdv_col_old        (:,:) 
      real(r8), pointer :: flx_absdn_col        (:,:) ! col absorbed flux per unit incident direct flux:  NIR (col,lyr) [frc]
+     real(r8), pointer :: flx_absdn_col_old        (:,:) 
      real(r8), pointer :: flx_absiv_col        (:,:) ! col absorbed flux per unit incident diffuse flux: VIS (col,lyr) [frc]
+     real(r8), pointer :: flx_absiv_col_old        (:,:) 
      real(r8), pointer :: flx_absin_col        (:,:) ! col absorbed flux per unit incident diffuse flux: NIR (col,lyr) [frc]
+     real(r8), pointer :: flx_absin_col_old        (:,:)
 
      real(r8) , pointer :: fsun_z_patch        (:,:) ! patch patch sunlit fraction of canopy layer
+     real(r8) , pointer :: fsun_z_patch_old        (:,:) 
      real(r8) , pointer :: tlai_z_patch        (:,:) ! patch tlai increment for canopy layer                         
+     real(r8) , pointer :: tlai_z_patch_old        (:,:) 
      real(r8) , pointer :: tsai_z_patch        (:,:) ! patch tsai increment for canopy layer                         
+     real(r8) , pointer :: tsai_z_patch_old        (:,:) 
      integer  , pointer :: ncan_patch          (:)   ! patch number of canopy layers
+     integer  , pointer :: ncan_patch_old          (:) 
      integer  , pointer :: nrad_patch          (:)   ! patch number of canopy layers, above snow for radiative transfer
+     integer  , pointer :: nrad_patch_old          (:) 
      real(r8) , pointer :: vcmaxcintsun_patch  (:)   ! patch leaf to canopy scaling coefficient, sunlit leaf vcmax   
+     real(r8) , pointer :: vcmaxcintsun_patch_old  (:) 
      real(r8) , pointer :: vcmaxcintsha_patch  (:)   ! patch leaf to canopy scaling coefficient, shaded leaf vcmax   
+     real(r8) , pointer :: vcmaxcintsha_patch_old  (:)
 
    contains
 
@@ -100,6 +133,8 @@ contains
     use shr_infnan_mod, only: nan => shr_infnan_nan, assignment(=)
     use clm_varcon    , only: spval, ispval
     use clm_varctl    , only: use_SSRE
+    use spmdMod    , only : masterproc
+    use clm_varctl    , only : iulog
     !
     ! !ARGUMENTS:
     class(surfalb_type) :: this
@@ -112,6 +147,10 @@ contains
 
     begp = bounds%begp; endp = bounds%endp
     begc = bounds%begc; endc = bounds%endc
+
+    if (masterproc) then
+     write(iulog,*) "allocate SurfaceAlbedoType"
+    end if
 
     allocate(this%coszen_col         (begc:endc))              ; this%coszen_col         (:)   = nan
     allocate(this%albgrd_col         (begc:endc,numrad))       ; this%albgrd_col         (:,:) = nan

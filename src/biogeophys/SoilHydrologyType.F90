@@ -22,10 +22,14 @@ Module SoilHydrologyType
      real(r8), pointer :: num_substeps_col   (:)    ! col adaptive timestep counter     
      ! NON-VIC
      real(r8), pointer :: frost_table_col   (:)     ! col frost table depth                    
+     real(r8), pointer :: frost_table_col_old   (:)
      real(r8), pointer :: zwt_col           (:)     ! col water table depth
+     real(r8), pointer :: zwt_col_old           (:) 
      real(r8), pointer :: zwts_col          (:)     ! col water table depth, the shallower of the two water depths
      real(r8), pointer :: zwt_perched_col   (:)     ! col perched water table depth
+     real(r8), pointer :: zwt_perched_col_old   (:) 
      real(r8), pointer :: wa_col            (:)     ! col water in the unconfined aquifer (mm)
+     real(r8), pointer :: wa_col_old            (:) 
      real(r8), pointer :: qcharge_col       (:)     ! col aquifer recharge rate (mm/s) 
      real(r8), pointer :: fracice_col       (:,:)   ! col fractional impermeability (-)
      real(r8), pointer :: icefrac_col       (:,:)   ! col fraction of ice       
@@ -95,6 +99,8 @@ contains
     !
     ! !USES:
     use shr_infnan_mod , only : nan => shr_infnan_nan, assignment(=)
+    use spmdMod    , only : masterproc
+    use clm_varctl    , only : iulog
     !
     ! !ARGUMENTS:
     class(soilhydrology_type) :: this
@@ -109,6 +115,10 @@ contains
     begp = bounds%begp; endp= bounds%endp
     begc = bounds%begc; endc= bounds%endc
     begg = bounds%begg; endg= bounds%endg
+
+    if (masterproc) then
+     write(iulog,*) "allocate SoilHydrologyType"
+    end if
 
     allocate(this%num_substeps_col   (begc:endc))                ; this%num_substeps_col   (:)     = nan
     allocate(this%frost_table_col   (begc:endc))                 ; this%frost_table_col   (:)     = nan

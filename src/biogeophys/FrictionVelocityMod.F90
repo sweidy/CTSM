@@ -43,6 +43,7 @@ module FrictionVelocityMod
      real(r8), pointer, public :: vds_patch        (:)   ! patch deposition velocity term (m/s) (for dry dep SO4, NH4NO3)
      real(r8), pointer, public :: fv_patch         (:)   ! patch friction velocity (m/s) (for dust model)
      real(r8), pointer, public :: rb1_patch        (:)   ! patch aerodynamical resistance (s/m) (for dry deposition of chemical tracers)
+     real(r8), pointer, public :: rb1_patch_old        (:)  
      real(r8), pointer, public :: rb10_patch       (:)   ! 10-day mean patch aerodynamical resistance (s/m) (for LUNA model)
      real(r8), pointer, public :: ram1_patch       (:)   ! patch aerodynamical resistance (s/m)
      real(r8), pointer, public :: z0m_patch        (:)   ! patch momentum roughness length (m)
@@ -50,6 +51,7 @@ module FrictionVelocityMod
      real(r8), pointer, public :: z0hv_patch       (:)   ! patch roughness length over vegetation, sensible heat [m]
      real(r8), pointer, public :: z0qv_patch       (:)   ! patch roughness length over vegetation, latent heat [m]
      real(r8), pointer, public :: z0mg_col         (:)   ! col roughness length over ground, momentum  [m] 
+     real(r8), pointer, public :: z0mg_col_old         (:) 
      real(r8), pointer, public :: z0hg_col         (:)   ! col roughness length over ground, sensible heat [m]
      real(r8), pointer, public :: z0qg_col         (:)   ! col roughness length over ground, latent heat [m]
 
@@ -98,6 +100,8 @@ contains
     !
     ! !USES:
     use shr_infnan_mod , only : nan => shr_infnan_nan, assignment(=)
+    use spmdMod    , only : masterproc
+    use clm_varctl    , only : iulog
     !
     ! !ARGUMENTS:
     class(frictionvel_type) :: this
@@ -110,6 +114,10 @@ contains
 
     begp = bounds%begp; endp= bounds%endp
     begc = bounds%begc; endc= bounds%endc
+
+    if (masterproc) then
+      write(iulog,*) "allocate FrictionVelocityMod"
+    end if
 
     allocate(this%forc_hgt_u_patch (begp:endp)) ; this%forc_hgt_u_patch (:)   = nan
     allocate(this%forc_hgt_t_patch (begp:endp)) ; this%forc_hgt_t_patch (:)   = nan

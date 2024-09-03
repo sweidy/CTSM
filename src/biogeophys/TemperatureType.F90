@@ -23,30 +23,44 @@ module TemperatureType
 
      ! Temperatures
      real(r8), pointer :: t_veg_patch              (:)   ! patch vegetation temperature (Kelvin)
+     real(r8), pointer :: t_veg_patch_old              (:) 
      real(r8), pointer :: t_skin_patch             (:)   ! patch skin temperature (Kelvin)
      real(r8), pointer :: t_veg_day_patch          (:)   ! patch daytime  accumulative vegetation temperature (Kelvinx*nsteps), LUNA specific, from midnight to current step
      real(r8), pointer :: t_veg_night_patch        (:)   ! patch night-time accumulative vegetation temperature (Kelvin*nsteps), LUNA specific, from midnight to current step
      real(r8), pointer :: t_veg10_day_patch        (:)   ! 10 day running mean of patch daytime time vegetation temperature (Kelvin), LUNA specific, but can be reused
      real(r8), pointer :: t_veg10_night_patch      (:)   ! 10 day running mean of patch night time vegetation temperature (Kelvin), LUNA specific, but can be reused
      integer,  pointer :: ndaysteps_patch          (:)   ! number of daytime steps accumulated from mid-night, LUNA specific
+     integer,  pointer :: ndaysteps_patch_old          (:) 
      integer,  pointer :: nnightsteps_patch        (:)   ! number of nighttime steps accumulated from mid-night, LUNA specific
+     integer,  pointer :: nnightsteps_patch_old        (:)  
      real(r8), pointer :: t_h2osfc_col             (:)   ! col surface water temperature
+     real(r8), pointer :: t_h2osfc_col_old             (:) 
      real(r8), pointer :: t_h2osfc_bef_col         (:)   ! col surface water temperature from time-step before
      real(r8), pointer :: t_ssbef_col              (:,:) ! col soil/snow temperature before update (-nlevsno+1:nlevgrnd)
      real(r8), pointer :: t_soisno_col             (:,:) ! col soil temperature (Kelvin)  (-nlevsno+1:nlevgrnd)
+     real(r8), pointer :: t_soisno_col_old             (:,:) 
      real(r8), pointer :: tsl_col                  (:)   ! col temperature of near-surface soil layer (Kelvin)
      real(r8), pointer :: t_soi10cm_col            (:)   ! col soil temperature in top 10cm of soil (Kelvin)
      real(r8), pointer :: t_soi17cm_col            (:)   ! col soil temperature in top 17cm of soil (Kelvin)
      real(r8), pointer :: t_sno_mul_mss_col        (:)   ! col snow temperature multiplied by layer mass, layer sum (K * kg/m2) 
      real(r8), pointer :: t_lake_col               (:,:) ! col lake temperature (Kelvin)  (1:nlevlak)          
+     real(r8), pointer :: t_lake_col_old               (:,:) 
      real(r8), pointer :: t_grnd_col               (:)   ! col ground temperature (Kelvin)
+     real(r8), pointer :: t_grnd_col_old               (:) 
      real(r8), pointer :: t_grnd_r_col             (:)   ! col rural ground temperature (Kelvin)
+     real(r8), pointer :: t_grnd_r_col_old             (:) 
      real(r8), pointer :: t_grnd_u_col             (:)   ! col urban ground temperature (Kelvin) (needed by Hydrology2Mod)
+     real(r8), pointer :: t_grnd_u_col_old             (:) 
      real(r8), pointer :: t_building_lun           (:)   ! lun internal building air temperature (K)
+     real(r8), pointer :: t_building_lun_old           (:) 
      real(r8), pointer :: t_roof_inner_lun         (:)   ! lun roof inside surface temperature (K)
+     real(r8), pointer :: t_roof_inner_lun_old         (:) 
      real(r8), pointer :: t_sunw_inner_lun         (:)   ! lun sunwall inside surface temperature (K)
+     real(r8), pointer :: t_sunw_inner_lun_old         (:)
      real(r8), pointer :: t_shdw_inner_lun         (:)   ! lun shadewall inside surface temperature (K)
+     real(r8), pointer :: t_shdw_inner_lun_old         (:) 
      real(r8), pointer :: t_floor_lun              (:)   ! lun floor temperature (K)
+     real(r8), pointer :: t_floor_lun_old              (:)  
      real(r8), pointer :: snot_top_col             (:)   ! col temperature of top snow layer [K]
      real(r8), pointer :: dTdz_top_col             (:)   ! col temperature gradient in top layer  [K m-1]
      real(r8), pointer :: dt_veg_patch             (:)   ! patch change in t_veg, last iteration (Kelvin)
@@ -59,10 +73,14 @@ module TemperatureType
      real(r8), pointer :: t_a5min_patch            (:)   ! patch 5-day running mean of min 2-m temperature
 
      real(r8), pointer :: taf_lun                  (:)   ! lun urban canopy air temperature (K)
+     real(r8), pointer :: taf_lun_old                  (:)
 
      real(r8), pointer :: t_ref2m_patch            (:)   ! patch 2 m height surface air temperature (Kelvin)
+     real(r8), pointer :: t_ref2m_patch_old            (:) 
      real(r8), pointer :: t_ref2m_r_patch          (:)   ! patch rural 2 m height surface air temperature (Kelvin)
+     real(r8), pointer :: t_ref2m_r_patch_old          (:)  
      real(r8), pointer :: t_ref2m_u_patch          (:)   ! patch urban 2 m height surface air temperature (Kelvin)
+     real(r8), pointer :: t_ref2m_u_patch_old          (:) 
      real(r8), pointer :: t_ref2m_min_patch        (:)   ! patch daily minimum of average 2 m height surface air temperature (K)
      real(r8), pointer :: t_ref2m_min_r_patch      (:)   ! patch daily minimum of average 2 m height surface air temperature - rural(K)
      real(r8), pointer :: t_ref2m_min_u_patch      (:)   ! patch daily minimum of average 2 m height surface air temperature - urban (K)
@@ -170,6 +188,8 @@ contains
     !
     ! !USES:
     use shr_infnan_mod , only : nan => shr_infnan_nan, assignment(=)
+    use spmdMod    , only : masterproc
+    use clm_varctl    , only : iulog
     !
     ! !ARGUMENTS:
     class(temperature_type) :: this
@@ -186,6 +206,10 @@ contains
     begc = bounds%begc; endc= bounds%endc
     begl = bounds%begl; endl= bounds%endl
     begg = bounds%begg; endg= bounds%endg
+
+    if (masterproc) then
+     write(iulog,*) "allocate TemperatureType"
+    end if
 
     ! Temperatures
     allocate(this%t_veg_patch              (begp:endp))                      ; this%t_veg_patch              (:)   = nan

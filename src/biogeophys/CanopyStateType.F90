@@ -23,23 +23,32 @@ module CanopyStateType
   type, public :: CanopyState_type
 
      integer  , pointer :: frac_veg_nosno_patch     (:)   ! patch fraction of vegetation not covered by snow (0 OR 1) [-] 
-     integer  , pointer :: frac_veg_nosno_alb_patch (:)   ! patch fraction of vegetation not covered by snow (0 OR 1) [-] 
+     integer  , pointer :: frac_veg_nosno_alb_patch (:)   ! patch fraction of vegetation not covered by snow (0 OR 1) [-]
+     integer  , pointer :: frac_veg_nosno_alb_patch_old (:) 
 
      real(r8) , pointer :: tlai_patch               (:)   ! patch canopy one-sided leaf area index, no burying by snow
+     real(r8) , pointer :: tlai_patch_old               (:)
      real(r8) , pointer :: tsai_patch               (:)   ! patch canopy one-sided stem area index, no burying by snow
+     real(r8) , pointer :: tsai_patch_old               (:) 
      real(r8) , pointer :: elai_patch               (:)   ! patch canopy one-sided leaf area index with burying by snow
+     real(r8) , pointer :: elai_patch_old               (:)
      real(r8) , pointer :: esai_patch               (:)   ! patch canopy one-sided stem area index with burying by snow
+     real(r8) , pointer :: esai_patch_old               (:) 
      real(r8) , pointer :: elai240_patch            (:)   ! patch canopy one-sided leaf area index with burying by snow average over 10days 
      real(r8) , pointer :: laisun_patch             (:)   ! patch patch sunlit projected leaf area index  
      real(r8) , pointer :: laisha_patch             (:)   ! patch patch shaded projected leaf area index  
      real(r8) , pointer :: laisun_z_patch           (:,:) ! patch patch sunlit leaf area for canopy layer 
      real(r8) , pointer :: laisha_z_patch           (:,:) ! patch patch shaded leaf area for canopy layer 
      real(r8) , pointer :: mlaidiff_patch           (:)   ! patch difference between lai month one and month two (for dry deposition of chemical tracers)
+     real(r8) , pointer :: mlaidiff_patch_old           (:) 
      real(r8) , pointer :: annlai_patch             (:,:) ! patch 12 months of monthly lai from input data set (for dry deposition of chemical tracers) 
      real(r8) , pointer :: htop_patch               (:)   ! patch canopy top (m)
+     real(r8) , pointer :: htop_patch_old               (:)
      real(r8) , pointer :: hbot_patch               (:)   ! patch canopy bottom (m)
+     real(r8) , pointer :: hbot_patch_old               (:) 
      real(r8) , pointer :: displa_patch             (:)   ! patch displacement height (m)
      real(r8) , pointer :: fsun_patch               (:)   ! patch sunlit fraction of canopy         
+     real(r8) , pointer :: fsun_patch_old               (:)  
      real(r8) , pointer :: fsun24_patch             (:)   ! patch 24hr average of sunlit fraction of canopy 
      real(r8) , pointer :: fsun240_patch            (:)   ! patch 240hr average of sunlit fraction of canopy
 
@@ -56,6 +65,7 @@ module CanopyStateType
      real(r8) , pointer :: rscanopy_patch           (:)   ! patch canopy stomatal resistance (s/m) (ED specific)
 
      real(r8) , pointer :: vegwp_patch              (:,:) ! patch vegetation water matric potential (mm)
+     real(r8) , pointer :: vegwp_patch_old              (:,:)
 
      real(r8)           :: leaf_mr_vcm = spval            ! Scalar constant of leaf respiration with Vcmax
 
@@ -99,6 +109,8 @@ contains
   subroutine InitAllocate(this, bounds)
     !
     ! !USES:
+    use spmdMod    , only : masterproc
+    use clm_varctl    , only : iulog
     !
     ! !ARGUMENTS:
     class(canopystate_type) :: this
@@ -113,6 +125,10 @@ contains
     begp = bounds%begp; endp= bounds%endp
     begc = bounds%begc; endc= bounds%endc
     begg = bounds%begg; endg= bounds%endg
+
+    if (masterproc) then
+          write(iulog,*) "allocate CanopyStateType"
+    end if
 
     allocate(this%frac_veg_nosno_patch     (begp:endp))           ; this%frac_veg_nosno_patch     (:)   = huge(1)
     allocate(this%frac_veg_nosno_alb_patch (begp:endp))           ; this%frac_veg_nosno_alb_patch (:)   = 0

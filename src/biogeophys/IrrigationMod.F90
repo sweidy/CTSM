@@ -134,8 +134,11 @@ module IrrigationMod
 
      ! Private data members; time-varying:
      real(r8), pointer :: irrig_rate_patch            (:) ! current irrigation rate [mm/s]
+     real(r8), pointer :: irrig_rate_patch_old            (:) 
      real(r8), pointer :: irrig_rate_demand_patch     (:) ! current irrigation rate, neglecting surface water source limitation [mm/s]
+     real(r8), pointer :: irrig_rate_demand_patch_old     (:) 
      integer , pointer :: n_irrig_steps_left_patch    (:) ! number of time steps for which we still need to irrigate today (if 0, ignore)
+     integer , pointer :: n_irrig_steps_left_patch_old    (:) 
      real(r8), pointer :: qflx_irrig_demand_patch     (:) ! irrigation flux neglecting surface water source limitation [mm/s]
 
    contains
@@ -491,6 +494,8 @@ contains
     !
     ! !USES:
     use shr_infnan_mod , only : nan => shr_infnan_nan, assignment(=)
+    use spmdMod    , only : masterproc
+    use clm_varctl    , only : iulog
     !
     ! !ARGUMENTS:
     class(irrigation_type) , intent(inout) :: this
@@ -505,6 +510,10 @@ contains
 
     begp = bounds%begp; endp= bounds%endp
     begc = bounds%begc; endc= bounds%endc
+
+    if (masterproc) then
+      write(iulog,*) "allocate IrrigationMod"
+    end if
 
     allocate(this%qflx_irrig_patch         (begp:endp))          ; this%qflx_irrig_patch         (:)   = nan
     allocate(this%qflx_irrig_demand_patch  (begp:endp))          ; this%qflx_irrig_demand_patch  (:)   = nan

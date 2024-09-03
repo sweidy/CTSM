@@ -35,7 +35,9 @@ module SoilStateType
      real(r8), pointer :: hksat_col            (:,:) ! col hydraulic conductivity at saturation (mm H2O /s) 
      real(r8), pointer :: hksat_min_col        (:,:) ! col mineral hydraulic conductivity at saturation (hksat) (mm/s)
      real(r8), pointer :: hk_l_col             (:,:) ! col hydraulic conductivity (mm/s)
+     real(r8), pointer :: hk_l_col_old             (:,:) 
      real(r8), pointer :: smp_l_col            (:,:) ! col soil matric potential (mm)
+     real(r8), pointer :: smp_l_col_old            (:,:) 
      real(r8), pointer :: smpmin_col           (:)   ! col restriction for min of soil potential (mm) 
      real(r8), pointer :: bsw_col              (:,:) ! col Clapp and Hornberger "b" (nlevgrnd)  
      real(r8), pointer :: watsat_col           (:,:) ! col volumetric soil water at saturation (porosity) 
@@ -44,7 +46,9 @@ module SoilStateType
      real(r8), pointer :: watfc_col            (:,:) ! col volumetric soil water at field capacity (nlevsoi)
      real(r8), pointer :: sucsat_col           (:,:) ! col minimum soil suction (mm) (nlevgrnd) 
      real(r8), pointer :: dsl_col              (:)   ! col dry surface layer thickness (mm)
+     real(r8), pointer :: dsl_col_old              (:) 
      real(r8), pointer :: soilresis_col        (:)   ! col soil evaporative resistance S&L14 (s/m)
+     real(r8), pointer :: soilresis_col_old        (:) 
      real(r8), pointer :: soilbeta_col         (:)   ! col factor that reduces ground evaporation L&P1992(-)
      real(r8), pointer :: soilalpha_col        (:)   ! col factor that reduces ground saturated specific humidity (-)
      real(r8), pointer :: soilalpha_u_col      (:)   ! col urban factor that reduces ground saturated specific humidity (-) 
@@ -109,6 +113,10 @@ contains
     ! !DESCRIPTION:
     ! Initialize module data structure
     !
+    ! !USES:
+    use spmdMod    , only : masterproc
+    use clm_varctl    , only : iulog
+    !
     ! !ARGUMENTS:
     class(soilstate_type) :: this
     type(bounds_type), intent(in) :: bounds  
@@ -122,6 +130,10 @@ contains
     begp = bounds%begp; endp= bounds%endp
     begc = bounds%begc; endc= bounds%endc
     begg = bounds%begg; endg= bounds%endg
+
+    if (masterproc) then
+     write(iulog,*) "allocate SoilStateType"
+    end if
 
     allocate(this%mss_frc_cly_vld_col  (begc:endc))                     ; this%mss_frc_cly_vld_col  (:)   = nan
     allocate(this%sandfrac_patch       (begp:endp))                     ; this%sandfrac_patch       (:)   = nan

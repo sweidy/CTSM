@@ -44,6 +44,7 @@ module EnergyFluxType
      real(r8), pointer :: eflx_lwrad_net_r_patch  (:)   ! patch rural net infrared (longwave) rad (W/m**2) [+ = to atm]
      real(r8), pointer :: eflx_lwrad_net_u_patch  (:)   ! patch urban net infrared (longwave) rad (W/m**2) [+ = to atm]
      real(r8), pointer :: eflx_lwrad_out_patch    (:)   ! patch emitted infrared (longwave) radiation (W/m**2)
+     real(r8), pointer :: eflx_lwrad_out_patch_old    (:) 
      real(r8), pointer :: eflx_lwrad_out_r_patch  (:)   ! patch rural emitted infrared (longwave) rad (W/m**2)
      real(r8), pointer :: eflx_lwrad_out_u_patch  (:)   ! patch urban emitted infrared (longwave) rad (W/m**2)
      real(r8), pointer :: eflx_snomelt_col        (:)   ! col snow melt heat flux (W/m**2)
@@ -51,7 +52,9 @@ module EnergyFluxType
      real(r8), pointer :: eflx_snomelt_u_col      (:)   ! col urban snow melt heat flux (W/m**2)
      real(r8), pointer :: eflx_gnet_patch         (:)   ! patch net heat flux into ground  (W/m**2)
      real(r8), pointer :: eflx_grnd_lake_patch    (:)   ! patch net heat flux into lake / snow surface, excluding light transmission (W/m**2)
+     real(r8), pointer :: eflx_grnd_lake_patch_old    (:) 
      real(r8), pointer :: eflx_dynbal_grc         (:)   ! grc dynamic land cover change conversion energy flux (W/m**2)
+     real(r8), pointer :: eflx_dynbal_grc_old         (:) 
      real(r8), pointer :: eflx_bot_col            (:)   ! col heat flux from beneath the soil or ice column (W/m**2)
      real(r8), pointer :: eflx_fgr12_col          (:)   ! col ground heat flux between soil layers 1 and 2 (W/m**2)
      real(r8), pointer :: eflx_fgr_col            (:,:) ! col (rural) soil downward heat flux (W/m2) (1:nlevgrnd)  (pos upward; usually eflx_bot >= 0)
@@ -67,7 +70,9 @@ module EnergyFluxType
      real(r8), pointer :: eflx_heat_from_ac_lun   (:)   ! lun sensible heat flux to be put back into canyon due to removal by AC (W/m**2)
      real(r8), pointer :: eflx_building_lun       (:)   ! lun building heat flux from change in interior building air temperature (W/m**2)
      real(r8), pointer :: eflx_urban_ac_lun       (:)   ! lun urban air conditioning flux (W/m**2)
+     real(r8), pointer :: eflx_urban_ac_lun_old       (:) 
      real(r8), pointer :: eflx_urban_heat_lun     (:)   ! lun urban heating flux (W/m**2)
+     real(r8), pointer :: eflx_urban_heat_lun_old     (:)
 
      ! Derivatives of energy fluxes
      real(r8), pointer :: dgnetdT_patch           (:)   ! patch derivative of net ground heat flux wrt soil temp  (W/m**2 K)
@@ -89,6 +94,7 @@ module EnergyFluxType
 
      ! Transpiration
      real(r8), pointer :: btran_patch             (:)   ! patch transpiration wetness factor (0 to 1)
+     real(r8), pointer :: btran_patch_old         (:) 
      real(r8), pointer :: btran_min_patch         (:)   ! patch daily minimum transpiration wetness factor (0 to 1)
      real(r8), pointer :: btran_min_inst_patch    (:)   ! patch instantaneous daily minimum transpiration wetness factor (0 to 1)
      real(r8), pointer :: bsun_patch              (:)   ! patch sunlit canopy transpiration wetness factor (0 to 1)
@@ -96,6 +102,7 @@ module EnergyFluxType
 
      ! Roots
      real(r8), pointer :: btran2_patch            (:)   ! patch root zone soil wetness factor (0 to 1) 
+     real(r8), pointer :: btran2_patch_old        (:) 
      real(r8), pointer :: rresis_patch            (:,:) ! patch root resistance by layer (0-1)  (nlevgrnd)
 
      ! Latent heat
@@ -165,6 +172,8 @@ contains
     ! !USES:
     use shr_infnan_mod , only : nan => shr_infnan_nan, assignment(=)
     use clm_varpar     , only : nlevsno, nlevgrnd, nlevlak
+    use spmdMod    , only : masterproc
+    use clm_varctl    , only : iulog
     implicit none
     !
     ! !ARGUMENTS:
@@ -182,6 +191,10 @@ contains
     begc = bounds%begc; endc= bounds%endc
     begl = bounds%begl; endl= bounds%endl
     begg = bounds%begg; endg= bounds%endg
+
+    if (masterproc) then
+          write(iulog,*) "allocate EnergyFluxType"
+    end if
 
     allocate( this%eflx_h2osfc_to_snow_col (begc:endc))             ; this%eflx_h2osfc_to_snow_col (:)   = nan
     allocate( this%eflx_sh_snow_patch      (begp:endp))             ; this%eflx_sh_snow_patch      (:)   = nan
