@@ -196,6 +196,41 @@ contains
     allocate(this%nrad_patch         (begp:endp))              ; this%nrad_patch         (:)   = 0
     allocate(this%vcmaxcintsun_patch (begp:endp))              ; this%vcmaxcintsun_patch (:)   = nan
     allocate(this%vcmaxcintsha_patch (begp:endp))              ; this%vcmaxcintsha_patch (:)   = nan
+    
+    allocate(this%coszen_col_old         (begc:endc))              ; this%coszen_col_old          (:)   = nan
+    allocate(this%albgrd_col_old          (begc:endc,numrad))       ; this%albgrd_col_old          (:,:) = nan
+    allocate(this%albgri_col_old          (begc:endc,numrad))       ; this%albgri_col_old          (:,:) = nan
+    allocate(this%albsnd_hst_col_old      (begc:endc,numrad))       ; this%albsnd_hst_col_old      (:,:) = spval
+    allocate(this%albsni_hst_col_old      (begc:endc,numrad))       ; this%albsni_hst_col_old      (:,:) = spval
+    allocate(this%albsod_col_old          (begc:endc,numrad))       ; this%albsod_col_old          (:,:) = spval
+    allocate(this%albsoi_col_old          (begc:endc,numrad))       ; this%albsoi_col_old          (:,:) = spval
+    allocate(this%albd_patch_old          (begp:endp,numrad))       ; this%albd_patch_old          (:,:) = nan
+    allocate(this%albi_patch_old          (begp:endp,numrad))       ; this%albi_patch_old          (:,:) = nan
+    allocate(this%ftdd_patch_old          (begp:endp,numrad))       ; this%ftdd_patch_old          (:,:) = nan
+    allocate(this%ftid_patch_old          (begp:endp,numrad))       ; this%ftid_patch_old          (:,:) = nan
+    allocate(this%ftii_patch_old          (begp:endp,numrad))       ; this%ftii_patch_old          (:,:) = nan
+    allocate(this%fabd_patch_old          (begp:endp,numrad))       ; this%fabd_patch_old          (:,:) = nan
+    allocate(this%fabd_sun_patch_old      (begp:endp,numrad))       ; this%fabd_sun_patch_old      (:,:) = nan
+    allocate(this%fabd_sha_patch_old      (begp:endp,numrad))       ; this%fabd_sha_patch_old      (:,:) = nan
+    allocate(this%fabi_patch_old          (begp:endp,numrad))       ; this%fabi_patch_old          (:,:) = nan
+    allocate(this%fabi_sun_patch_old      (begp:endp,numrad))       ; this%fabi_sun_patch_old      (:,:) = nan
+    allocate(this%fabi_sha_patch_old      (begp:endp,numrad))       ; this%fabi_sha_patch_old      (:,:) = nan
+    allocate(this%fabd_sun_z_patch_old    (begp:endp,nlevcan))      ; this%fabd_sun_z_patch_old    (:,:) = 0._r8
+    allocate(this%fabd_sha_z_patch_old    (begp:endp,nlevcan))      ; this%fabd_sha_z_patch_old    (:,:) = 0._r8
+    allocate(this%fabi_sun_z_patch_old    (begp:endp,nlevcan))      ; this%fabi_sun_z_patch_old    (:,:) = 0._r8
+    allocate(this%fabi_sha_z_patch_old    (begp:endp,nlevcan))      ; this%fabi_sha_z_patch_old    (:,:) = 0._r8
+    allocate(this%flx_absdv_col_old       (begc:endc,-nlevsno+1:1)) ; this%flx_absdv_col_old       (:,:) = spval
+    allocate(this%flx_absdn_col_old       (begc:endc,-nlevsno+1:1)) ; this%flx_absdn_col_old       (:,:) = spval
+    allocate(this%flx_absiv_col_old       (begc:endc,-nlevsno+1:1)) ; this%flx_absiv_col_old       (:,:) = spval
+    allocate(this%flx_absin_col_old       (begc:endc,-nlevsno+1:1)) ; this%flx_absin_col_old       (:,:) = spval
+
+    allocate(this%fsun_z_patch_old        (begp:endp,nlevcan))      ; this%fsun_z_patch_old        (:,:) = 0._r8
+    allocate(this%tlai_z_patch_old        (begp:endp,nlevcan))      ; this%tlai_z_patch_old        (:,:) = 0._r8
+    allocate(this%tsai_z_patch_old        (begp:endp,nlevcan))      ; this%tsai_z_patch_old        (:,:) = 0._r8
+    allocate(this%ncan_patch_old          (begp:endp))              ; this%ncan_patch_old          (:)   = 0
+    allocate(this%nrad_patch_old          (begp:endp))              ; this%nrad_patch_old          (:)   = 0
+    allocate(this%vcmaxcintsun_patch_old  (begp:endp))              ; this%vcmaxcintsun_patch_old  (:)   = nan
+    allocate(this%vcmaxcintsha_patch_old  (begp:endp))              ; this%vcmaxcintsha_patch_old  (:)   = nan
 
   end subroutine InitAllocate
 

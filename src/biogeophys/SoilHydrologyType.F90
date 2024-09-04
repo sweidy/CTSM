@@ -152,6 +152,11 @@ contains
     allocate(this%max_infil_col     (begc:endc))                 ; this%max_infil_col     (:)     = nan
     allocate(this%i_0_col           (begc:endc))                 ; this%i_0_col           (:)     = nan
     allocate(this%ice_col           (begc:endc,nlayert))         ; this%ice_col           (:,:)   = nan
+    
+    allocate(this%frost_table_col_old  (begc:endc)) ; this%frost_table_col_old  (:) = nan
+    allocate(this%wa_col_old  (begc:endc)) ; this%wa_col_old  (:) = nan
+    allocate(this%zwt_col_old  (begc:endc)) ; this%zwt_col_old  (:) = nan
+    allocate(this%zwt_perched_col_old  (begc:endc)) ; this%zwt_perched_col_old  (:) = nan
 
   end subroutine InitAllocate
 

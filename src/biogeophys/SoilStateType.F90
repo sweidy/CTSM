@@ -187,6 +187,11 @@ contains
     allocate(this%nsw_col              (begc:endc,1:nlevgrnd))          ; this%nsw_col              (:,:) = nan
     allocate(this%alphasw_col          (begc:endc,1:nlevgrnd))          ; this%alphasw_col          (:,:) = nan
     allocate(this%watres_col           (begc:endc,1:nlevgrnd))          ; this%watres_col           (:,:) = nan
+    
+    allocate(this%dsl_col_old  (begc:endc)) ; this%dsl_col_old  (:) = spval
+    allocate(this%soilresis_col_old  (begc:endc)) ; this%soilresis_col_old  (:) = spval
+    allocate(this%smp_l_col_old  (begc:endc,nlevgrnd)) ; this%smp_l_col_old  (:,:) = nan
+    allocate(this%hk_l_col_old  (begc:endc,nlevgrnd)) ; this%hk_l_col_old  (:,:) = nan
   end subroutine InitAllocate
 
   !-----------------------------------------------------------------------

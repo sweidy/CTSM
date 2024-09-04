@@ -266,7 +266,28 @@ contains
     allocate(this%errh2o_patch           (begp:endp))                     ; this%errh2o_patch           (:)   = nan
     allocate(this%errh2o_col             (begc:endc))                     ; this%errh2o_col             (:)   = nan
     allocate(this%errh2osno_col          (begc:endc))                     ; this%errh2osno_col          (:)   = nan
-  end subroutine InitAllocate
+    
+    allocate(this%int_snow_col_old  (begc:endc)) ; this%int_snow_col_old  (:) = nan
+    allocate(this%h2osfc_col_old  (begc:endc)) ; this%h2osfc_col_old  (:) = nan
+    allocate(this%h2osno_col_old  (begc:endc)) ; this%h2osno_col_old  (:) = nan
+    allocate(this%h2osoi_liq_col_old  (begc:endc,-nlevsno+1:nlevgrnd)) ; this%h2osoi_liq_col_old  (:,:) = nan
+    allocate(this%h2osoi_ice_col_old  (begc:endc,-nlevsno+1:nlevgrnd)) ; this%h2osoi_ice_col_old  (:,:) = nan
+    allocate(this%h2ocan_patch_old  (begp:endp)) ; this%h2ocan_patch_old  (:) = nan
+    allocate(this%snocan_patch_old  (begp:endp)) ; this%snocan_patch_old  (:) = nan
+    allocate(this%liqcan_patch_old  (begp:endp)) ; this%liqcan_patch_old  (:) = nan
+    allocate(this%snounload_patch_old  (begp:endp)) ; this%snounload_patch_old  (:) = nan
+    allocate(this%tws_grc_old  (begg:endg)) ; this%tws_grc_old  (:) = nan
+    allocate(this%rh_af_patch_old  (begp:endp)) ; this%rh_af_patch_old  (:) = nan
+    allocate(this%frac_h2osfc_col_old  (begc:endc)) ; this%frac_h2osfc_col_old  (:) = nan
+    allocate(this%snow_depth_col_old  (begc:endc)) ; this%snow_depth_col_old  (:) = nan
+    allocate(this%snow_persistence_col_old  (begc:endc)) ; this%snow_persistence_col_old  (:) = nan
+    allocate(this%frac_sno_eff_col_old  (begc:endc)) ; this%frac_sno_eff_col_old  (:) = nan
+    allocate(this%frac_sno_col_old  (begc:endc)) ; this%frac_sno_col_old  (:) = nan
+    allocate(this%fwet_patch_old  (begp:endp)) ; this%fwet_patch_old  (:) = nan
+    allocate(this%fcansno_patch_old  (begp:endp)) ; this%fcansno_patch_old  (:) = nan
+    allocate(this%snw_rds_col_old  (begc:endc,-nlevsno+1:0)) ; this%snw_rds_col_old  (:,:) = nan
+    allocate(this%qaf_lun_old  (begl:endl)) ; this%qaf_lun_old  (:) = nan
+   end subroutine InitAllocate
 
   !------------------------------------------------------------------------
   subroutine InitHistory(this, bounds)

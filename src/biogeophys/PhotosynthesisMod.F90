@@ -338,6 +338,14 @@ contains
 !!
 !    allocate(this%psncanopy_patch   (begp:endp))           ; this%psncanopy_patch   (:)   = nan
 !    allocate(this%lmrcanopy_patch   (begp:endp))           ; this%lmrcanopy_patch   (:)   = nan
+    allocate(this%gs_mol_sha_patch_old  (begp:endp,1:nlevcan)) ; this%gs_mol_sha_patch_old  (:,:) = nan
+    allocate(this%gs_mol_sun_ln_patch_old  (begp:endp,1:nlevcan)) ; this%gs_mol_sun_ln_patch_old  (:,:) = nan
+    allocate(this%gs_mol_sha_ln_patch_old  (begp:endp,1:nlevcan)) ; this%gs_mol_sha_ln_patch_old  (:,:) = nan
+    allocate(this%lnca_patch_old  (begp:endp)) ; this%lnca_patch_old  (:) = nan
+    allocate(this%luvcmax25top_patch_old  (begp:endp)) ; this%luvcmax25top_patch_old  (:) = nan
+    allocate(this%lujmax25top_patch_old  (begp:endp)) ; this%lujmax25top_patch_old  (:) = nan
+    allocate(this%lutpu25top_patch_old  (begp:endp)) ; this%lutpu25top_patch_old  (:) = nan
+
     if(use_luna)then
       ! NOTE(bja, 2015-09) because these variables are only allocated
       ! when luna is turned on, they can not be placed into associate
@@ -347,6 +355,12 @@ contains
       allocate(this%pnlc_z_patch    (begp:endp,1:nlevcan)) ; this%pnlc_z_patch      (:,:) = 0.01_r8
       allocate(this%fpsn24_patch    (begp:endp))           ; this%fpsn24_patch      (:)   = nan
       allocate(this%enzs_z_patch    (begp:endp,1:nlevcan)) ; this%enzs_z_patch      (:,:) = 1._r8
+
+      allocate(this%vcmx25_z_patch_old  (begp:endp,1:nlevcan)) ; this%vcmx25_z_patch_old  (:,:) = 30._r8
+      allocate(this%jmx25_z_patch_old  (begp:endp,1:nlevcan)) ; this%jmx25_z_patch_old  (:,:) = 60._r8
+      allocate(this%pnlc_z_patch_old  (begp:endp,1:nlevcan)) ; this%pnlc_z_patch_old  (:,:) = 0.01_r8
+      allocate(this%enzs_z_patch_old  (begp:endp,1:nlevcan)) ; this%enzs_z_patch_old  (:,:) = 1._r8
+      allocate(this%fpsn24_patch_old  (begp:endp)) ; this%fpsn24_patch_old  (:) = nan
     endif
 
   end subroutine InitAllocate

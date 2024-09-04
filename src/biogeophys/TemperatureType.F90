@@ -221,6 +221,8 @@ contains
      allocate(this%t_veg10_night_patch     (begp:endp))                      ; this%t_veg10_night_patch      (:)   = spval
      allocate(this%ndaysteps_patch         (begp:endp))                      ; this%ndaysteps_patch          (:)   = ispval
      allocate(this%nnightsteps_patch       (begp:endp))                      ; this%nnightsteps_patch        (:)   = ispval
+     allocate(this%ndaysteps_patch_old  (begp:endp)) ; this%ndaysteps_patch_old  (:) = ispval
+     allocate(this%nnightsteps_patch_old  (begp:endp)) ; this%nnightsteps_patch_old  (:) = ispval
     endif
     allocate(this%t_h2osfc_col             (begc:endc))                      ; this%t_h2osfc_col             (:)   = nan
     allocate(this%t_h2osfc_bef_col         (begc:endc))                      ; this%t_h2osfc_bef_col         (:)   = nan
@@ -297,6 +299,23 @@ contains
     allocate(this%xmf_h2osfc_col           (begc:endc))                      ; this%xmf_h2osfc_col           (:)   = nan
     allocate(this%fact_col                 (begc:endc, -nlevsno+1:nlevgrnd)) ; this%fact_col                 (:,:) = nan
     allocate(this%c_h2osfc_col             (begc:endc))                      ; this%c_h2osfc_col             (:)   = nan
+    
+    allocate(this%t_soisno_col_old  (begc:endc,-nlevsno+1:nlevgrnd))  ; this%t_soisno_col_old  (:,:) = nan
+    allocate(this%t_veg_patch_old  (begp:endp)) ; this%t_veg_patch_old  (:) = nan
+    allocate(this%t_h2osfc_col_old  (begc:endc)) ; this%t_h2osfc_col_old  (:) = nan
+    allocate(this%t_lake_col_old  (begc:endc,1:nlevlak)) ; this%t_lake_col_old  (:,:) = nan
+    allocate(this%t_grnd_col_old  (begc:endc)) ; this%t_grnd_col_old  (:) = nan
+    allocate(this%t_grnd_r_col_old  (begc:endc)) ; this%t_grnd_r_col_old  (:) = nan
+    allocate(this%t_grnd_u_col_old  (begc:endc)) ; this%t_grnd_u_col_old  (:) = nan
+    allocate(this%t_ref2m_patch_old  (begp:endp)) ; this%t_ref2m_patch_old  (:) = nan
+    allocate(this%t_ref2m_r_patch_old  (begp:endp)) ; this%t_ref2m_r_patch_old  (:) = nan
+    allocate(this%t_ref2m_u_patch_old  (begp:endp)) ; this%t_ref2m_u_patch_old  (:) = nan
+    allocate(this%taf_lun_old  (begl:endl)) ; this%taf_lun_old  (:) = nan
+    allocate(this%t_building_lun_old  (begl:endl)) ; this%t_building_lun_old  (:) = nan
+    allocate(this%t_roof_inner_lun_old  (begl:endl)) ; this%t_roof_inner_lun_old  (:) = nan
+    allocate(this%t_sunw_inner_lun_old  (begl:endl)) ; this%t_sunw_inner_lun_old  (:) = nan
+    allocate(this%t_shdw_inner_lun_old  (begl:endl)) ; this%t_shdw_inner_lun_old  (:) = nan
+    allocate(this%t_floor_lun_old  (begl:endl)) ; this%t_floor_lun_old  (:) = nan
 
   end subroutine InitAllocate
 

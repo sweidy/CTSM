@@ -254,7 +254,12 @@ contains
     allocate(this%qflx_liq_dynbal_grc      (begg:endg))              ; this%qflx_liq_dynbal_grc      (:)   = nan
     allocate(this%qflx_ice_dynbal_grc      (begg:endg))              ; this%qflx_ice_dynbal_grc      (:)   = nan
     allocate(this%AnnET                    (begc:endc))              ; this%AnnET                    (:)   = nan
-
+    
+    allocate(this%qflx_snofrz_lyr_col_old  (begc:endc,-nlevsno+1:0)) ; this%qflx_snofrz_lyr_col_old  (:,:) = nan
+    allocate(this%qflx_snow_drain_col_old  (begc:endc)) ; this%qflx_snow_drain_col_old  (:) = nan
+    allocate(this%qflx_liq_dynbal_grc_old  (begg:endg)) ; this%qflx_liq_dynbal_grc_old  (:) = nan
+    allocate(this%qflx_ice_dynbal_grc_old  (begg:endg)) ; this%qflx_ice_dynbal_grc_old  (:) = nan
+    
     this%qflx_liq_dynbal_dribbler = annual_flux_dribbler_gridcell( &
          bounds = bounds, &
          name = 'qflx_liq_dynbal', &

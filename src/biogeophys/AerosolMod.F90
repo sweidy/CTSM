@@ -193,8 +193,17 @@ contains
     allocate(this%mss_cnc_dst2_col     (begc:endc,-nlevsno+1:0)) ; this%mss_cnc_dst2_col     (:,:) = nan
     allocate(this%mss_cnc_dst3_col     (begc:endc,-nlevsno+1:0)) ; this%mss_cnc_dst3_col     (:,:) = nan
     allocate(this%mss_cnc_dst4_col     (begc:endc,-nlevsno+1:0)) ; this%mss_cnc_dst4_col     (:,:) = nan
-
-  end subroutine InitAllocate
+    
+    allocate(this%mss_bcpho_col_old  (begc:endc,-nlevsno+1:0)) ; this%mss_bcpho_col_old  (:,:) = nan
+    allocate(this%mss_bcphi_col_old  (begc:endc,-nlevsno+1:0)) ; this%mss_bcphi_col_old  (:,:) = nan
+    allocate(this%mss_ocpho_col_old  (begc:endc,-nlevsno+1:0)) ; this%mss_ocpho_col_old  (:,:) = nan
+    allocate(this%mss_ocphi_col_old  (begc:endc,-nlevsno+1:0)) ; this%mss_ocphi_col_old  (:,:) = nan
+    allocate(this%mss_dst1_col_old  (begc:endc,-nlevsno+1:0)) ; this%mss_dst1_col_old  (:,:) = nan
+    allocate(this%mss_dst2_col_old  (begc:endc,-nlevsno+1:0)) ; this%mss_dst2_col_old  (:,:) = nan
+    allocate(this%mss_dst3_col_old  (begc:endc,-nlevsno+1:0)) ; this%mss_dst3_col_old  (:,:) = nan
+    allocate(this%mss_dst4_col_old  (begc:endc,-nlevsno+1:0)) ; this%mss_dst4_col_old  (:,:) = nan
+  
+   end subroutine InitAllocate
 
   !-----------------------------------------------------------------------
   subroutine InitHistory(this, bounds)

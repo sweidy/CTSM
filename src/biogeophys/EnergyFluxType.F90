@@ -275,6 +275,14 @@ contains
     allocate( this%errlon_patch            (begp:endp))             ; this%errlon_patch            (:)   = nan
     allocate( this%errlon_col              (begc:endc))             ; this%errlon_col              (:)   = nan
 
+    allocate(this%eflx_lwrad_out_patch_old  (begp:endp)) ; this%eflx_lwrad_out_patch_old  (:) = nan
+    allocate(this%eflx_urban_ac_lun_old  (begl:endl)) ; this%eflx_urban_ac_lun_old  (:) = nan
+    allocate(this%eflx_urban_heat_lun_old  (begl:endl)) ; this%eflx_urban_heat_lun_old  (:) = nan
+    allocate(this%btran_patch_old  (begp:endp)) ; this%btran_patch_old  (:) = nan
+    allocate(this%btran2_patch_old  (begp:endp)) ; this%btran2_patch_old  (:) = nan
+    allocate(this%eflx_grnd_lake_patch_old  (begp:endp)) ; this%eflx_grnd_lake_patch_old  (:) = nan
+    allocate(this%eflx_dynbal_grc_old  (begg:endg)) ; this%eflx_dynbal_grc_old  (:) = nan
+
     this%eflx_dynbal_dribbler = annual_flux_dribbler_gridcell( &
          bounds = bounds, &
          name = 'eflx_dynbal', &

@@ -176,8 +176,21 @@ contains
     allocate(this%fsds_nir_d_patch       (begp:endp))              ; this%fsds_nir_d_patch       (:)   = nan
     allocate(this%fsds_nir_i_patch       (begp:endp))              ; this%fsds_nir_i_patch       (:)   = nan
     allocate(this%fsds_nir_d_ln_patch    (begp:endp))              ; this%fsds_nir_d_ln_patch    (:)   = nan
+    
+    allocate(this%sabs_roof_dir_lun_old  (begl:endl,1:numrad)) ; this%sabs_roof_dir_lun_old  (:,:) = nan
+    allocate(this%sabs_roof_dif_lun_old  (begl:endl,1:numrad)) ; this%sabs_roof_dif_lun_old  (:,:) = nan
+    allocate(this%sabs_sunwall_dir_lun_old  (begl:endl,1:numrad)) ; this%sabs_sunwall_dir_lun_old  (:,:) = nan
+    allocate(this%sabs_sunwall_dif_lun_old  (begl:endl,1:numrad)) ; this%sabs_sunwall_dif_lun_old  (:,:) = nan
+    allocate(this%sabs_shadewall_dir_lun_old  (begl:endl,1:numrad)) ; this%sabs_shadewall_dir_lun_old  (:,:) = nan
+    allocate(this%sabs_shadewall_dif_lun_old  (begl:endl,1:numrad)) ; this%sabs_shadewall_dif_lun_old  (:,:) = nan
+    allocate(this%sabs_improad_dir_lun_old  (begl:endl,1:numrad)) ; this%sabs_improad_dir_lun_old  (:,:) = nan
+    allocate(this%sabs_improad_dif_lun_old  (begl:endl,1:numrad)) ; this%sabs_improad_dif_lun_old  (:,:) = nan
+    allocate(this%sabs_perroad_dir_lun_old  (begl:endl,1:numrad)) ; this%sabs_perroad_dir_lun_old  (:,:) = nan
+    allocate(this%sabs_perroad_dif_lun_old  (begl:endl,1:numrad)) ; this%sabs_perroad_dif_lun_old  (:,:) = nan
+    allocate(this%parsun_z_patch_old  (begp:endp,1:nlevcan)) ; this%parsun_z_patch_old  (:,:) = nan
+    allocate(this%parsha_z_patch_old  (begp:endp,1:nlevcan)) ; this%parsha_z_patch_old  (:,:) = nan
 
-  end subroutine InitAllocate
+end subroutine InitAllocate
 
   !-----------------------------------------------------------------------
   subroutine InitHistory(this, bounds)

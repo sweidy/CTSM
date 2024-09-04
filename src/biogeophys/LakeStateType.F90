@@ -112,6 +112,10 @@ contains
     allocate(this%ws_col             (begc:endc))           ; this%ws_col             (:)   = nan
     allocate(this%betaprime_col      (begc:endc))           ; this%betaprime_col      (:)   = nan
 
+    allocate(this%lake_icefrac_col_old  (begc:endc,1:nlevlak)) ; this%lake_icefrac_col_old  (:,:) = nan
+    allocate(this%savedtke1_col_old  (begc:endc)) ; this%savedtke1_col_old  (:) = spval
+    allocate(this%ust_lake_col_old  (begc:endc)) ; this%ust_lake_col_old  (:) = spval
+
   end subroutine InitAllocate
 
   !-----------------------------------------------------------------------

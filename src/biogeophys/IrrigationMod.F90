@@ -523,8 +523,12 @@ contains
     allocate(this%irrig_rate_patch         (begp:endp))          ; this%irrig_rate_patch         (:)   = nan
     allocate(this%irrig_rate_demand_patch  (begp:endp))          ; this%irrig_rate_demand_patch  (:)   = nan
     allocate(this%n_irrig_steps_left_patch (begp:endp))          ; this%n_irrig_steps_left_patch (:)   = 0
-
-  end subroutine IrrigationInitAllocate
+    
+    allocate(this%n_irrig_steps_left_patch_old  (begp:endp)) ; this%n_irrig_steps_left_patch_old  (:) = 0 
+    allocate(this%irrig_rate_patch_old  (begp:endp)) ; this%irrig_rate_patch_old  (:) = nan
+    allocate(this%irrig_rate_demand_patch_old  (begp:endp)) ; this%irrig_rate_demand_patch_old  (:) = nan
+  
+   end subroutine IrrigationInitAllocate
 
   !-----------------------------------------------------------------------
   subroutine IrrigationInitHistory(this, bounds)

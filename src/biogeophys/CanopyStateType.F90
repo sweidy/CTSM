@@ -163,6 +163,17 @@ contains
 !    allocate(this%gccanopy_patch           (begp:endp))           ; this%gccanopy_patch           (:)   = 0.0_r8     
     allocate(this%vegwp_patch              (begp:endp,1:nvegwcs)) ; this%vegwp_patch              (:,:) = nan
 
+    allocate(this%frac_veg_nosno_alb_patch_old  (begp:endp)) ; this%frac_veg_nosno_alb_patch_old  (:) = 0
+    allocate(this%tlai_patch_old  (begp:endp)) ; this%tlai_patch_old  (:) = nan
+    allocate(this%tsai_patch_old  (begp:endp)) ; this%tsai_patch_old  (:) = nan
+    allocate(this%elai_patch_old  (begp:endp)) ; this%elai_patch_old  (:) = nan
+    allocate(this%esai_patch_old  (begp:endp)) ; this%esai_patch_old  (:) = nan
+    allocate(this%htop_patch_old  (begp:endp)) ; this%htop_patch_old  (:) = nan
+    allocate(this%hbot_patch_old  (begp:endp)) ; this%hbot_patch_old  (:) = nan
+    allocate(this%mlaidiff_patch_old  (begp:endp)) ; this%mlaidiff_patch_old  (:) = nan
+    allocate(this%fsun_patch_old  (begp:endp)) ; this%fsun_patch_old  (:) = nan
+    allocate(this%vegwp_patch_old  (begp:endp,1:nvegwcs)) ; this%vegwp_patch_old  (:,:) = nan    
+
   end subroutine InitAllocate
 
   !-----------------------------------------------------------------------

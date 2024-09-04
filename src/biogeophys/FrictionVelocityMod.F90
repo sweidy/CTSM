@@ -137,6 +137,9 @@ contains
     allocate(this%z0mg_col         (begc:endc)) ; this%z0mg_col         (:)   = nan
     allocate(this%z0qg_col         (begc:endc)) ; this%z0qg_col         (:)   = nan
     allocate(this%z0hg_col         (begc:endc)) ; this%z0hg_col         (:)   = nan
+    
+    allocate(this%z0mg_col_old  (begc:endc)) ; this%z0mg_col_old  (:) = nan
+    allocate(this%rb1_patch_old  (begp:endp)) ; this%rb1_patch_old  (:) = nan
 
   end subroutine InitAllocate
 
