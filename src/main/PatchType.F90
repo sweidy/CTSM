@@ -101,11 +101,14 @@ module PatchType
 
      ! g/l/c/p hierarchy, local g/l/c/p cells only
      integer , pointer :: column   (:) ! index into column level quantities
-     real(r8), pointer :: wtcol    (:) ! weight (relative to column) 
+     real(r8), pointer :: wtcol    (:) ! weight (relative to column)
+     real(r8), pointer :: wtcol_old    (:) 
      integer , pointer :: landunit (:) ! index into landunit level quantities
-     real(r8), pointer :: wtlunit  (:) ! weight (relative to landunit) 
+     real(r8), pointer :: wtlunit  (:) ! weight (relative to landunit)
+     real(r8), pointer :: wtlunit_old  (:) 
      integer , pointer :: gridcell (:) ! index into gridcell level quantities
-     real(r8), pointer :: wtgcell  (:) ! weight (relative to gridcell) 
+     real(r8), pointer :: wtgcell  (:) ! weight (relative to gridcell)
+     real(r8), pointer :: wtgcell_old  (:)   
 
      ! Non-ED only 
      integer , pointer :: itype    (:) ! patch vegetation 
@@ -151,12 +154,15 @@ contains
 
     allocate(this%gridcell      (begp:endp)); this%gridcell   (:) = ispval
     allocate(this%wtgcell       (begp:endp)); this%wtgcell    (:) = nan
+    allocate(this%wtgcell_old       (begp:endp)); this%wtgcell_old    (:) = nan
 
     allocate(this%landunit      (begp:endp)); this%landunit   (:) = ispval
     allocate(this%wtlunit       (begp:endp)); this%wtlunit    (:) = nan
+    allocate(this%wtlunit_old       (begp:endp)); this%wtlunit_old    (:) = nan
 
     allocate(this%column        (begp:endp)); this%column     (:) = ispval
     allocate(this%wtcol         (begp:endp)); this%wtcol      (:) = nan
+    allocate(this%wtcol_old         (begp:endp)); this%wtcol_old      (:) = nan
 
     allocate(this%mxy           (begp:endp)); this%mxy        (:) = ispval
     allocate(this%active        (begp:endp)); this%active     (:) = .false.
@@ -187,10 +193,13 @@ contains
 
     deallocate(this%gridcell)
     deallocate(this%wtgcell )
+    deallocate(this%wtgcell_old )
     deallocate(this%landunit)
     deallocate(this%wtlunit )
+    deallocate(this%wtlunit_old )
     deallocate(this%column  )
     deallocate(this%wtcol   )
+    deallocate(this%wtcol_old   )
     deallocate(this%itype   )
     deallocate(this%mxy     )
     deallocate(this%active  )

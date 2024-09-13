@@ -81,13 +81,17 @@ module atm2lndType
      real(r8), pointer :: forc_rh_grc                   (:)   => null() ! atmospheric relative humidity (%)
      real(r8), pointer :: forc_psrf_grc                 (:)   => null() ! surface pressure (Pa)
      real(r8), pointer :: forc_pco2_grc                 (:)   => null() ! CO2 partial pressure (Pa)
+     real(r8), pointer :: forc_pco2_grc_old                 (:)   => null()
      real(r8), pointer :: forc_pco2_240_patch           (:)   => null() ! 10-day mean CO2 partial pressure (Pa)
      real(r8), pointer :: forc_solad_grc                (:,:) => null() ! direct beam radiation (numrad) (vis=forc_sols , nir=forc_soll )
+     real(r8), pointer :: forc_solad_grc_old                (:,:) => null()
      real(r8), pointer :: forc_solai_grc                (:,:) => null() ! diffuse radiation (numrad) (vis=forc_solsd, nir=forc_solld)
+     real(r8), pointer :: forc_solai_grc_old                (:,:) => null()
      real(r8), pointer :: forc_solar_grc                (:)   => null() ! incident solar radiation
      real(r8), pointer :: forc_ndep_grc                 (:)   => null() ! nitrogen deposition rate (gN/m2/s)
      real(r8), pointer :: forc_pc13o2_grc               (:)   => null() ! C13O2 partial pressure (Pa)
      real(r8), pointer :: forc_po2_grc                  (:)   => null() ! O2 partial pressure (Pa)
+     real(r8), pointer :: forc_po2_grc_old                  (:)   => null()
      real(r8), pointer :: forc_po2_240_patch            (:)   => null() ! 10-day mean O2 partial pressure (Pa)
      real(r8), pointer :: forc_aer_grc                  (:,:) => null() ! aerosol deposition array
      real(r8), pointer :: forc_pch4_grc                 (:)   => null() ! CH4 partial pressure (Pa)
@@ -107,6 +111,7 @@ module atm2lndType
      real(r8), pointer :: forc_th_downscaled_col        (:)   => null() ! downscaled atm potential temperature (Kelvin)
      real(r8), pointer :: forc_q_downscaled_col         (:)   => null() ! downscaled atm specific humidity (kg/kg)
      real(r8), pointer :: forc_pbot_downscaled_col      (:)   => null() ! downscaled atm pressure (Pa)
+     real(r8), pointer :: forc_pbot_downscaled_col_old      (:)   => null()
      real(r8), pointer :: forc_rho_downscaled_col       (:)   => null() ! downscaled atm density (kg/m**3)
      real(r8), pointer :: forc_rain_downscaled_col      (:)   => null() ! downscaled atm rain rate [mm/s]
      real(r8), pointer :: forc_snow_downscaled_col      (:)   => null() ! downscaled atm snow rate [mm/s]
@@ -114,6 +119,7 @@ module atm2lndType
 
      !  rof->lnd
      real(r8), pointer :: forc_flood_grc                (:)   => null() ! rof flood (mm/s)
+     real(r8), pointer :: forc_flood_grc_old                (:)   => null() ! rof flood (mm/s)
      real(r8), pointer :: volr_grc                      (:)   => null() ! rof volr total volume (m3)
      real(r8), pointer :: volrmch_grc                   (:)   => null() ! rof volr main channel (m3)
 
@@ -570,6 +576,14 @@ contains
     end if
     allocate(this%t_mo_patch                    (begp:endp))        ; this%t_mo_patch               (:)   = nan
     allocate(this%t_mo_min_patch                (begp:endp))        ; this%t_mo_min_patch           (:)   = spval ! TODO - initialize this elsewhere
+
+     ! adding - sweid
+    allocate(this%forc_solad_grc_old                (begg:endg,numrad)) ; this%forc_solad_grc_old                (:,:) = ival
+    allocate(this%forc_solai_grc_old                (begg:endg,numrad)) ; this%forc_solai_grc_old                (:,:) = ival
+    allocate(this%forc_po2_grc_old                  (begg:endg))        ; this%forc_po2_grc_old                  (:)   = ival
+    allocate(this%forc_pco2_grc_old                 (begg:endg))        ; this%forc_pco2_grc_old                 (:)   = ival
+    allocate(this%forc_pbot_downscaled_col_old      (begc:endc))        ; this%forc_pbot_downscaled_col_old      (:)   = ival
+    allocate(this%forc_flood_grc_old                (begg:endg))        ; this%forc_flood_grc_old                (:)   = ival
 
   end subroutine InitAllocate
 
@@ -1238,12 +1252,16 @@ contains
     deallocate(this%forc_vp_grc)
     deallocate(this%forc_psrf_grc)
     deallocate(this%forc_pco2_grc)
+    deallocate(this%forc_pco2_grc_old)
     deallocate(this%forc_solad_grc)
+    deallocate(this%forc_solad_grc_old)
     deallocate(this%forc_solai_grc)
+    deallocate(this%forc_solai_grc_old)
     deallocate(this%forc_solar_grc)
     deallocate(this%forc_ndep_grc)
     deallocate(this%forc_pc13o2_grc)
     deallocate(this%forc_po2_grc)
+    deallocate(this%forc_po2_grc_old)
     deallocate(this%forc_aer_grc)
     deallocate(this%forc_pch4_grc)
 
@@ -1261,6 +1279,7 @@ contains
     deallocate(this%forc_t_downscaled_col)
     deallocate(this%forc_q_downscaled_col)
     deallocate(this%forc_pbot_downscaled_col)
+    deallocate(this%forc_pbot_downscaled_col_old)
     deallocate(this%forc_th_downscaled_col)
     deallocate(this%forc_rho_downscaled_col)
     deallocate(this%forc_lwrad_downscaled_col)
@@ -1269,6 +1288,7 @@ contains
 
     ! rof->lnd
     deallocate(this%forc_flood_grc)
+    deallocate(this%forc_flood_grc_old)
     deallocate(this%volr_grc)
     deallocate(this%volrmch_grc)
 

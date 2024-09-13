@@ -29,6 +29,7 @@ module LandunitType
      ! g/l/c/p hierarchy, local g/l/c/p cells only
      integer , pointer :: gridcell     (:) ! index into gridcell level quantities
      real(r8), pointer :: wtgcell      (:) ! weight (relative to gridcell)
+     real(r8), pointer :: wtgcell_old      (:) 
      integer , pointer :: coli         (:) ! beginning column index per landunit
      integer , pointer :: colf         (:) ! ending column index for each landunit
      integer , pointer :: ncolumns     (:) ! number of columns for each landunit
@@ -79,6 +80,7 @@ contains
     ! The following is set in InitGridCellsMod
     allocate(this%gridcell     (begl:endl)); this%gridcell  (:) = ispval
     allocate(this%wtgcell      (begl:endl)); this%wtgcell   (:) = nan
+    allocate(this%wtgcell_old      (begl:endl)); this%wtgcell_old   (:) = nan
     allocate(this%coli         (begl:endl)); this%coli      (:) = ispval
     allocate(this%colf         (begl:endl)); this%colf      (:) = ispval
     allocate(this%ncolumns     (begl:endl)); this%ncolumns  (:) = ispval
@@ -116,6 +118,7 @@ contains
 
     deallocate(this%gridcell     )
     deallocate(this%wtgcell      )
+    deallocate(this%wtgcell_old      )
     deallocate(this%coli         )
     deallocate(this%colf         )
     deallocate(this%ncolumns     )

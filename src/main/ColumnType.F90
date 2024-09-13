@@ -36,8 +36,10 @@ module ColumnType
      ! g/l/c/p hierarchy, local g/l/c/p cells only
      integer , pointer :: landunit             (:)   ! index into landunit level quantities
      real(r8), pointer :: wtlunit              (:)   ! weight (relative to landunit)
+     real(r8), pointer :: wtlunit_old              (:)
      integer , pointer :: gridcell             (:)   ! index into gridcell level quantities
      real(r8), pointer :: wtgcell              (:)   ! weight (relative to gridcell)
+     real(r8), pointer :: wtgcell_old              (:)
      integer , pointer :: patchi               (:)   ! beginning patch index for each column
      integer , pointer :: patchf               (:)   ! ending patch index for each column
      integer , pointer :: npatches             (:)   ! number of patches for each column
@@ -56,9 +58,13 @@ module ColumnType
 
      ! vertical levels
      integer , pointer :: snl                  (:)   ! number of snow layers
-     real(r8), pointer :: dz                   (:,:) ! layer thickness (m)  (-nlevsno+1:nlevgrnd) 
-     real(r8), pointer :: z                    (:,:) ! layer depth (m) (-nlevsno+1:nlevgrnd) 
-     real(r8), pointer :: zi                   (:,:) ! interface level below a "z" level (m) (-nlevsno+0:nlevgrnd) 
+     integer , pointer :: snl_old                  (:) 
+     real(r8), pointer :: dz                   (:,:) ! layer thickness (m)  (-nlevsno+1:nlevgrnd)
+     real(r8), pointer :: dz_old                   (:,:) 
+     real(r8), pointer :: z                    (:,:) ! layer depth (m) (-nlevsno+1:nlevgrnd)
+     real(r8), pointer :: z_old                    (:,:) 
+     real(r8), pointer :: zi                   (:,:) ! interface level below a "z" level (m) (-nlevsno+0:nlevgrnd)
+     real(r8), pointer :: zi_old                   (:,:) 
      real(r8), pointer :: zii                  (:)   ! convective boundary height [m]
      real(r8), pointer :: dz_lake              (:,:) ! lake layer thickness (m)  (1:nlevlak)
      real(r8), pointer :: z_lake               (:,:) ! layer depth for lake (m)
@@ -132,6 +138,13 @@ contains
 
     allocate(this%hydrologically_active(begc:endc))            ; this%hydrologically_active(:) = .false.
 
+    allocate(this%wtgcell_old     (begc:endc))                     ; this%wtgcell_old     (:)   = nan
+    allocate(this%wtlunit_old     (begc:endc))                     ; this%wtlunit_old     (:)   = nan
+    allocate(this%snl_old         (begc:endc))                     ; this%snl_old         (:)   = ispval  !* cannot be averaged up
+    allocate(this%dz_old          (begc:endc,-nlevsno+1:nlevgrnd)) ; this%dz_old          (:,:) = nan
+    allocate(this%z_old           (begc:endc,-nlevsno+1:nlevgrnd)) ; this%z_old           (:,:) = nan
+    allocate(this%zi_old          (begc:endc,-nlevsno+0:nlevgrnd)) ; this%zi_old          (:,:) = nan
+
   end subroutine Init
 
   !------------------------------------------------------------------------
@@ -143,8 +156,10 @@ contains
 
     deallocate(this%gridcell   )
     deallocate(this%wtgcell    )
+    deallocate(this%wtgcell_old    )
     deallocate(this%landunit   )
     deallocate(this%wtlunit    )
+    deallocate(this%wtlunit_old    )
     deallocate(this%patchi     )
     deallocate(this%patchf     )
     deallocate(this%npatches    )
@@ -155,6 +170,10 @@ contains
     deallocate(this%dz         )
     deallocate(this%z          )
     deallocate(this%zi         )
+    deallocate(this%snl_old        )
+    deallocate(this%dz_old         )
+    deallocate(this%z_old          )
+    deallocate(this%zi_old         )
     deallocate(this%zii        )
     deallocate(this%lakedepth  )
     deallocate(this%dz_lake    )
