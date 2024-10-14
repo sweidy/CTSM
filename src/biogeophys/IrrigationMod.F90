@@ -133,12 +133,12 @@ module IrrigationMod
      real(r8), pointer :: relsat_target_col(:,:)        ! relative saturation at which smp is at the irrigation target [col, nlevsoi]
 
      ! Private data members; time-varying:
-     real(r8), pointer :: irrig_rate_patch            (:) ! current irrigation rate [mm/s]
-     real(r8), pointer :: irrig_rate_patch_old            (:) 
-     real(r8), pointer :: irrig_rate_demand_patch     (:) ! current irrigation rate, neglecting surface water source limitation [mm/s]
-     real(r8), pointer :: irrig_rate_demand_patch_old     (:) 
-     integer , pointer :: n_irrig_steps_left_patch    (:) ! number of time steps for which we still need to irrigate today (if 0, ignore)
-     integer , pointer :: n_irrig_steps_left_patch_old    (:) 
+     real(r8), pointer, public :: irrig_rate_patch            (:) ! current irrigation rate [mm/s]
+     real(r8), pointer, public :: irrig_rate_patch_old            (:) 
+     real(r8), pointer, public :: irrig_rate_demand_patch     (:) ! current irrigation rate, neglecting surface water source limitation [mm/s]
+     real(r8), pointer, public :: irrig_rate_demand_patch_old     (:) 
+     integer , pointer, public :: n_irrig_steps_left_patch    (:) ! number of time steps for which we still need to irrigate today (if 0, ignore)
+     integer , pointer, public :: n_irrig_steps_left_patch_old    (:) 
      real(r8), pointer :: qflx_irrig_demand_patch     (:) ! irrigation flux neglecting surface water source limitation [mm/s]
 
    contains
@@ -754,6 +754,9 @@ contains
     deallocate(this%irrig_rate_patch)
     deallocate(this%irrig_rate_demand_patch)
     deallocate(this%n_irrig_steps_left_patch)
+    deallocate(this%n_irrig_steps_left_patch_old)
+    deallocate(this%irrig_rate_patch_old)
+    deallocate(this%irrig_rate_demand_patch_old)
 
   end subroutine IrrigationClean
 

@@ -34,7 +34,8 @@ module CanopyStateType
      real(r8) , pointer :: elai_patch_old               (:)
      real(r8) , pointer :: esai_patch               (:)   ! patch canopy one-sided stem area index with burying by snow
      real(r8) , pointer :: esai_patch_old               (:) 
-     real(r8) , pointer :: elai240_patch            (:)   ! patch canopy one-sided leaf area index with burying by snow average over 10days 
+     real(r8) , pointer :: elai240_patch            (:)   ! patch canopy one-sided leaf area index with burying by snow average over 10days
+     real(r8) , pointer :: elai240_patch_old            (:) 
      real(r8) , pointer :: laisun_patch             (:)   ! patch patch sunlit projected leaf area index  
      real(r8) , pointer :: laisha_patch             (:)   ! patch patch shaded projected leaf area index  
      real(r8) , pointer :: laisun_z_patch           (:,:) ! patch patch sunlit leaf area for canopy layer 
@@ -49,8 +50,10 @@ module CanopyStateType
      real(r8) , pointer :: displa_patch             (:)   ! patch displacement height (m)
      real(r8) , pointer :: fsun_patch               (:)   ! patch sunlit fraction of canopy         
      real(r8) , pointer :: fsun_patch_old               (:)  
-     real(r8) , pointer :: fsun24_patch             (:)   ! patch 24hr average of sunlit fraction of canopy 
+     real(r8) , pointer :: fsun24_patch             (:)   ! patch 24hr average of sunlit fraction of canopy
+     real(r8) , pointer :: fsun24_patch_old             (:) 
      real(r8) , pointer :: fsun240_patch            (:)   ! patch 240hr average of sunlit fraction of canopy
+     real(r8) , pointer :: fsun240_patch_old            (:)
 
      real(r8) , pointer :: alt_col                  (:)   ! col current depth of thaw 
      integer  , pointer :: alt_indx_col             (:)   ! col current depth of thaw 
@@ -172,7 +175,10 @@ contains
     allocate(this%hbot_patch_old  (begp:endp)) ; this%hbot_patch_old  (:) = nan
     allocate(this%mlaidiff_patch_old  (begp:endp)) ; this%mlaidiff_patch_old  (:) = nan
     allocate(this%fsun_patch_old  (begp:endp)) ; this%fsun_patch_old  (:) = nan
-    allocate(this%vegwp_patch_old  (begp:endp,1:nvegwcs)) ; this%vegwp_patch_old  (:,:) = nan    
+    allocate(this%vegwp_patch_old  (begp:endp,1:nvegwcs)) ; this%vegwp_patch_old  (:,:) = nan 
+    allocate(this%fsun24_patch_old             (begp:endp))           ; this%fsun24_patch_old             (:)   = nan
+    allocate(this%fsun240_patch_old            (begp:endp))           ; this%fsun240_patch_old            (:)   = nan  
+    allocate(this%elai240_patch_old            (begp:endp))           ; this%elai240_patch_old            (:)   = nan 
 
   end subroutine InitAllocate
 

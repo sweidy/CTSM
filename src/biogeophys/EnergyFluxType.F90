@@ -96,7 +96,9 @@ module EnergyFluxType
      real(r8), pointer :: btran_patch             (:)   ! patch transpiration wetness factor (0 to 1)
      real(r8), pointer :: btran_patch_old         (:) 
      real(r8), pointer :: btran_min_patch         (:)   ! patch daily minimum transpiration wetness factor (0 to 1)
+     real(r8), pointer :: btran_min_patch_old         (:)
      real(r8), pointer :: btran_min_inst_patch    (:)   ! patch instantaneous daily minimum transpiration wetness factor (0 to 1)
+     real(r8), pointer :: btran_min_inst_patch_old    (:) 
      real(r8), pointer :: bsun_patch              (:)   ! patch sunlit canopy transpiration wetness factor (0 to 1)
      real(r8), pointer :: bsha_patch              (:)   ! patch shaded canopy transpiration wetness factor (0 to 1)
 
@@ -282,6 +284,8 @@ contains
     allocate(this%btran2_patch_old  (begp:endp)) ; this%btran2_patch_old  (:) = nan
     allocate(this%eflx_grnd_lake_patch_old  (begp:endp)) ; this%eflx_grnd_lake_patch_old  (:) = nan
     allocate(this%eflx_dynbal_grc_old  (begg:endg)) ; this%eflx_dynbal_grc_old  (:) = nan
+    allocate(this%btran_min_patch_old          (begp:endp))             ; this%btran_min_patch_old         (:)   = nan
+    allocate(this%btran_min_inst_patch_old     (begp:endp))             ; this%btran_min_inst_patch_old    (:)   = nan
 
     this%eflx_dynbal_dribbler = annual_flux_dribbler_gridcell( &
          bounds = bounds, &

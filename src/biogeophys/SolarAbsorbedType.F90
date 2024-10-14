@@ -28,10 +28,14 @@ module SolarAbsorbedType
      real(r8), pointer :: parsun_z_patch_old         (:,:) 
      real(r8), pointer :: parsha_z_patch         (:,:) ! patch absorbed PAR for shaded leaves in canopy layer (W/m**2) 
      real(r8), pointer :: parsha_z_patch_old         (:,:) 
-     real(r8), pointer :: par240d_z_patch        (:,:) ! 10-day running mean of daytime patch absorbed PAR for leaves in canopy layer (W/m**2) 
+     real(r8), pointer :: par240d_z_patch        (:,:) ! 10-day running mean of daytime patch absorbed PAR for leaves in canopy layer (W/m**2)
+     real(r8), pointer :: par240d_z_patch_old        (:,:) 
      real(r8), pointer :: par240x_z_patch        (:,:) ! 10-day running mean of maximum patch absorbed PAR for leaves in canopy layer (W/m**2)
-     real(r8), pointer :: par24d_z_patch         (:,:) ! daily accumulated  absorbed PAR for leaves in canopy layer from midnight to current step(J/m**2) 
+     real(r8), pointer :: par240x_z_patch_old        (:,:)
+     real(r8), pointer :: par24d_z_patch         (:,:) ! daily accumulated  absorbed PAR for leaves in canopy layer from midnight to current step(J/m**2)
+     real(r8), pointer :: par24d_z_patch_old         (:,:) 
      real(r8), pointer :: par24x_z_patch         (:,:) ! daily max of patch absorbed PAR for  leaves in canopy layer from midnight to current step(W/m**2)
+     real(r8), pointer :: par24x_z_patch_old         (:,:)
      real(r8), pointer :: sabg_soil_patch        (:)   ! patch solar radiation absorbed by soil (W/m**2)       
      real(r8), pointer :: sabg_snow_patch        (:)   ! patch solar radiation absorbed by snow (W/m**2)       
      real(r8), pointer :: sabg_patch             (:)   ! patch solar radiation absorbed by ground (W/m**2)     
@@ -142,6 +146,10 @@ contains
         allocate(this%par240x_z_patch    (begp:endp,1:nlevcan))    ; this%par240x_z_patch        (:,:) = spval 
         allocate(this%par24d_z_patch     (begp:endp,1:nlevcan))    ; this%par24d_z_patch         (:,:) = spval
         allocate(this%par24x_z_patch     (begp:endp,1:nlevcan))    ; this%par24x_z_patch         (:,:) = spval
+        allocate(this%par240d_z_patch_old    (begp:endp,1:nlevcan))    ; this%par240d_z_patch_old        (:,:) = spval
+        allocate(this%par240x_z_patch_old    (begp:endp,1:nlevcan))    ; this%par240x_z_patch_old        (:,:) = spval 
+        allocate(this%par24d_z_patch_old     (begp:endp,1:nlevcan))    ; this%par24d_z_patch_old         (:,:) = spval
+        allocate(this%par24x_z_patch_old     (begp:endp,1:nlevcan))    ; this%par24x_z_patch_old         (:,:) = spval
     endif    
     allocate(this%sabv_patch             (begp:endp))              ; this%sabv_patch             (:)   = nan
     allocate(this%sabg_patch             (begp:endp))              ; this%sabg_patch             (:)   = nan

@@ -106,12 +106,12 @@ module  PhotosynthesisMod
      real(r8), pointer, private :: kp_z_phs_patch    (:,:,:) ! patch initial slope of CO2 response curve (C4 plants)
      real(r8), pointer, private :: tpu_z_phs_patch   (:,:,:) ! patch triose phosphate utilization rate (umol CO2/m**2/s)
      real(r8), pointer, private :: gs_mol_sun_patch  (:,:) ! patch sunlit leaf stomatal conductance (umol H2O/m**2/s)
-     real(r8), pointer, private :: gs_mol_sha_patch  (:,:) ! patch shaded leaf stomatal conductance (umol H2O/m**2/s)
-     real(r8), pointer, private :: gs_mol_sha_patch_old  (:,:) 
-     real(r8), pointer, private :: gs_mol_sun_ln_patch (:,:) ! patch sunlit leaf stomatal conductance averaged over 1 hour before to 1 hour after local noon (umol H2O/m**2/s)
-     real(r8), pointer, private :: gs_mol_sun_ln_patch_old (:,:) 
-     real(r8), pointer, private :: gs_mol_sha_ln_patch (:,:) ! patch shaded leaf stomatal conductance averaged over 1 hour before to 1 hour after local noon (umol H2O/m**2/s)
-     real(r8), pointer, private :: gs_mol_sha_ln_patch_old (:,:) 
+     real(r8), pointer, public :: gs_mol_sha_patch  (:,:) ! patch shaded leaf stomatal conductance (umol H2O/m**2/s)
+     real(r8), pointer, public :: gs_mol_sha_patch_old  (:,:) 
+     real(r8), pointer, public :: gs_mol_sun_ln_patch (:,:) ! patch sunlit leaf stomatal conductance averaged over 1 hour before to 1 hour after local noon (umol H2O/m**2/s)
+     real(r8), pointer, public :: gs_mol_sun_ln_patch_old (:,:) 
+     real(r8), pointer, public :: gs_mol_sha_ln_patch (:,:) ! patch shaded leaf stomatal conductance averaged over 1 hour before to 1 hour after local noon (umol H2O/m**2/s)
+     real(r8), pointer, public :: gs_mol_sha_ln_patch_old (:,:) 
      real(r8), pointer, private :: ac_patch          (:,:) ! patch Rubisco-limited gross photosynthesis (umol CO2/m**2/s)
      real(r8), pointer, private :: aj_patch          (:,:) ! patch RuBP-limited gross photosynthesis (umol CO2/m**2/s)
      real(r8), pointer, private :: ap_patch          (:,:) ! patch product-limited (C3) or CO2-limited (C4) gross photosynthesis (umol CO2/m**2/s)
@@ -155,6 +155,7 @@ module  PhotosynthesisMod
      real(r8), pointer, private :: psnsha_wp_patch   (:)   ! patch product-limited shaded leaf photosynthesis (umol CO2/m**2/s)
 
      real(r8), pointer, public  :: fpsn_patch        (:)   ! patch photosynthesis                 (umol CO2/m**2 ground/s)
+     real(r8), pointer, public  :: fpsn_patch_old        (:)   ! patch photosynthesis                 (umol CO2/m**2 ground/s)
      real(r8), pointer, private :: fpsn_wc_patch     (:)   ! patch Rubisco-limited photosynthesis (umol CO2/m**2 ground/s)
      real(r8), pointer, private :: fpsn_wj_patch     (:)   ! patch RuBP-limited photosynthesis    (umol CO2/m**2 ground/s)
      real(r8), pointer, private :: fpsn_wp_patch     (:)   ! patch product-limited photosynthesis (umol CO2/m**2 ground/s)
@@ -193,7 +194,7 @@ module  PhotosynthesisMod
      real(r8), pointer, public  :: enzs_z_patch      (:,:) ! enzyme decay status 1.0-fully active; 0-all decayed during stress
      real(r8), pointer, public  :: enzs_z_patch_old      (:,:) 
      real(r8), pointer, public  :: fpsn24_patch      (:)   ! 24 hour mean patch photosynthesis (umol CO2/m**2 ground/day)
-     real(r8), pointer, public  :: fpsn24_patch_old      (:) 
+     !real(r8), pointer, public  :: fpsn24_patch_old      (:) 
 
      ! Logical switches for different options
      logical, public  :: rootstem_acc                      ! Respiratory acclimation for roots and stems
@@ -338,6 +339,7 @@ contains
 !!
 !    allocate(this%psncanopy_patch   (begp:endp))           ; this%psncanopy_patch   (:)   = nan
 !    allocate(this%lmrcanopy_patch   (begp:endp))           ; this%lmrcanopy_patch   (:)   = nan
+    allocate(this%fpsn_patch_old        (begp:endp))           ; this%fpsn_patch_old        (:)   = nan
     allocate(this%gs_mol_sha_patch_old  (begp:endp,1:nlevcan)) ; this%gs_mol_sha_patch_old  (:,:) = nan
     allocate(this%gs_mol_sun_ln_patch_old  (begp:endp,1:nlevcan)) ; this%gs_mol_sun_ln_patch_old  (:,:) = nan
     allocate(this%gs_mol_sha_ln_patch_old  (begp:endp,1:nlevcan)) ; this%gs_mol_sha_ln_patch_old  (:,:) = nan
@@ -360,7 +362,7 @@ contains
       allocate(this%jmx25_z_patch_old  (begp:endp,1:nlevcan)) ; this%jmx25_z_patch_old  (:,:) = 60._r8
       allocate(this%pnlc_z_patch_old  (begp:endp,1:nlevcan)) ; this%pnlc_z_patch_old  (:,:) = 0.01_r8
       allocate(this%enzs_z_patch_old  (begp:endp,1:nlevcan)) ; this%enzs_z_patch_old  (:,:) = 1._r8
-      allocate(this%fpsn24_patch_old  (begp:endp)) ; this%fpsn24_patch_old  (:) = nan
+      !allocate(this%fpsn24_patch_old  (begp:endp)) ; this%fpsn24_patch_old  (:) = nan
     endif
 
   end subroutine InitAllocate

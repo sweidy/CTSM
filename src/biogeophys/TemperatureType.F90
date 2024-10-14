@@ -26,9 +26,13 @@ module TemperatureType
      real(r8), pointer :: t_veg_patch_old              (:) 
      real(r8), pointer :: t_skin_patch             (:)   ! patch skin temperature (Kelvin)
      real(r8), pointer :: t_veg_day_patch          (:)   ! patch daytime  accumulative vegetation temperature (Kelvinx*nsteps), LUNA specific, from midnight to current step
+     real(r8), pointer :: t_veg_day_patch_old          (:) 
      real(r8), pointer :: t_veg_night_patch        (:)   ! patch night-time accumulative vegetation temperature (Kelvin*nsteps), LUNA specific, from midnight to current step
+     real(r8), pointer :: t_veg_night_patch_old        (:)
      real(r8), pointer :: t_veg10_day_patch        (:)   ! 10 day running mean of patch daytime time vegetation temperature (Kelvin), LUNA specific, but can be reused
+     real(r8), pointer :: t_veg10_day_patch_old        (:)
      real(r8), pointer :: t_veg10_night_patch      (:)   ! 10 day running mean of patch night time vegetation temperature (Kelvin), LUNA specific, but can be reused
+     real(r8), pointer :: t_veg10_night_patch_old      (:)
      integer,  pointer :: ndaysteps_patch          (:)   ! number of daytime steps accumulated from mid-night, LUNA specific
      integer,  pointer :: ndaysteps_patch_old          (:) 
      integer,  pointer :: nnightsteps_patch        (:)   ! number of nighttime steps accumulated from mid-night, LUNA specific
@@ -69,6 +73,7 @@ module TemperatureType
      real(r8), pointer :: thv_col                  (:)   ! col virtual potential temperature (kelvin)
      real(r8), pointer :: thm_patch                (:)   ! patch intermediate variable (forc_t+0.0098*forc_hgt_t_patch)
      real(r8), pointer :: t_a10_patch              (:)   ! patch 10-day running mean of the 2 m temperature (K)
+     real(r8), pointer :: t_a10_patch_old              (:)  
      real(r8), pointer :: t_a10min_patch           (:)   ! patch 10-day running mean of min 2-m temperature
      real(r8), pointer :: t_a5min_patch            (:)   ! patch 5-day running mean of min 2-m temperature
 
@@ -82,17 +87,29 @@ module TemperatureType
      real(r8), pointer :: t_ref2m_u_patch          (:)   ! patch urban 2 m height surface air temperature (Kelvin)
      real(r8), pointer :: t_ref2m_u_patch_old          (:) 
      real(r8), pointer :: t_ref2m_min_patch        (:)   ! patch daily minimum of average 2 m height surface air temperature (K)
+     real(r8), pointer :: t_ref2m_min_patch_old        (:)
      real(r8), pointer :: t_ref2m_min_r_patch      (:)   ! patch daily minimum of average 2 m height surface air temperature - rural(K)
+     real(r8), pointer :: t_ref2m_min_r_patch_old        (:)
      real(r8), pointer :: t_ref2m_min_u_patch      (:)   ! patch daily minimum of average 2 m height surface air temperature - urban (K)
+     real(r8), pointer :: t_ref2m_min_u_patch_old        (:)
      real(r8), pointer :: t_ref2m_max_patch        (:)   ! patch daily maximum of average 2 m height surface air temperature (K)
+     real(r8), pointer :: t_ref2m_max_patch_old        (:) 
      real(r8), pointer :: t_ref2m_max_r_patch      (:)   ! patch daily maximum of average 2 m height surface air temperature - rural(K)
+     real(r8), pointer :: t_ref2m_max_r_patch_old        (:) 
      real(r8), pointer :: t_ref2m_max_u_patch      (:)   ! patch daily maximum of average 2 m height surface air temperature - urban (K)
+     real(r8), pointer :: t_ref2m_max_u_patch_old        (:) 
      real(r8), pointer :: t_ref2m_min_inst_patch   (:)   ! patch instantaneous daily min of average 2 m height surface air temp (K)
+     real(r8), pointer :: t_ref2m_min_inst_patch_old   (:)
      real(r8), pointer :: t_ref2m_min_inst_r_patch (:)   ! patch instantaneous daily min of average 2 m height surface air temp - rural (K)
+     real(r8), pointer :: t_ref2m_min_inst_r_patch_old   (:)
      real(r8), pointer :: t_ref2m_min_inst_u_patch (:)   ! patch instantaneous daily min of average 2 m height surface air temp - urban (K)
+     real(r8), pointer :: t_ref2m_min_inst_u_patch_old   (:)
      real(r8), pointer :: t_ref2m_max_inst_patch   (:)   ! patch instantaneous daily max of average 2 m height surface air temp (K)
+     real(r8), pointer :: t_ref2m_max_inst_patch_old   (:)
      real(r8), pointer :: t_ref2m_max_inst_r_patch (:)   ! patch instantaneous daily max of average 2 m height surface air temp - rural (K)
+     real(r8), pointer :: t_ref2m_max_inst_r_patch_old   (:)
      real(r8), pointer :: t_ref2m_max_inst_u_patch (:)   ! patch instantaneous daily max of average 2 m height surface air temp - urban (K)
+     real(r8), pointer :: t_ref2m_max_inst_u_patch_old   (:)
 
      ! Accumulated quantities
      !
@@ -103,7 +120,9 @@ module TemperatureType
      ! accumulator without affecting the other).
      !
      real(r8), pointer :: t_veg24_patch           (:)   ! patch 24hr average vegetation temperature (K)
+     real(r8), pointer :: t_veg24_patch_old           (:)
      real(r8), pointer :: t_veg240_patch          (:)   ! patch 240hr average vegetation temperature (Kelvin)
+     real(r8), pointer :: t_veg240_patch_old          (:)
      real(r8), pointer :: gdd0_patch              (:)   ! patch growing degree-days base  0C from planting  (ddays)
      real(r8), pointer :: gdd8_patch              (:)   ! patch growing degree-days base  8C from planting  (ddays)
      real(r8), pointer :: gdd10_patch             (:)   ! patch growing degree-days base 10C from planting  (ddays)
@@ -223,6 +242,10 @@ contains
      allocate(this%nnightsteps_patch       (begp:endp))                      ; this%nnightsteps_patch        (:)   = ispval
      allocate(this%ndaysteps_patch_old  (begp:endp)) ; this%ndaysteps_patch_old  (:) = ispval
      allocate(this%nnightsteps_patch_old  (begp:endp)) ; this%nnightsteps_patch_old  (:) = ispval
+     allocate(this%t_veg_day_patch_old          (begp:endp))                      ; this%t_veg_day_patch_old          (:)   = spval
+     allocate(this%t_veg_night_patch_old        (begp:endp))                      ; this%t_veg_night_patch_old        (:)   = spval
+     allocate(this%t_veg10_day_patch_old        (begp:endp))                      ; this%t_veg10_day_patch_old        (:)   = spval
+     allocate(this%t_veg10_night_patch_old      (begp:endp))                      ; this%t_veg10_night_patch_old      (:)   = spval
     endif
     allocate(this%t_h2osfc_col             (begc:endc))                      ; this%t_h2osfc_col             (:)   = nan
     allocate(this%t_h2osfc_bef_col         (begc:endc))                      ; this%t_h2osfc_bef_col         (:)   = nan
@@ -316,6 +339,23 @@ contains
     allocate(this%t_sunw_inner_lun_old  (begl:endl)) ; this%t_sunw_inner_lun_old  (:) = nan
     allocate(this%t_shdw_inner_lun_old  (begl:endl)) ; this%t_shdw_inner_lun_old  (:) = nan
     allocate(this%t_floor_lun_old  (begl:endl)) ; this%t_floor_lun_old  (:) = nan
+
+    allocate(this%t_veg24_patch_old            (begp:endp))                      ; this%t_veg24_patch_old            (:)   = nan
+    allocate(this%t_veg240_patch_old           (begp:endp))                      ; this%t_veg240_patch_old           (:)   = nan
+    allocate(this%t_a10_patch_old              (begp:endp))                      ; this%t_a10_patch_old              (:)   = nan
+    allocate(this%t_ref2m_min_patch_old        (begp:endp))                      ; this%t_ref2m_min_patch_old        (:)   = nan
+    allocate(this%t_ref2m_min_r_patch_old      (begp:endp))                      ; this%t_ref2m_min_r_patch_old      (:)   = nan
+    allocate(this%t_ref2m_min_u_patch_old      (begp:endp))                      ; this%t_ref2m_min_u_patch_old      (:)   = nan
+    allocate(this%t_ref2m_max_patch_old        (begp:endp))                      ; this%t_ref2m_max_patch_old        (:)   = nan
+    allocate(this%t_ref2m_max_r_patch_old      (begp:endp))                      ; this%t_ref2m_max_r_patch_old      (:)   = nan
+    allocate(this%t_ref2m_max_u_patch_old      (begp:endp))                      ; this%t_ref2m_max_u_patch_old      (:)   = nan
+    allocate(this%t_ref2m_max_inst_patch_old   (begp:endp))                      ; this%t_ref2m_max_inst_patch_old   (:)   = nan
+    allocate(this%t_ref2m_max_inst_r_patch_old (begp:endp))                      ; this%t_ref2m_max_inst_r_patch_old (:)   = nan
+    allocate(this%t_ref2m_max_inst_u_patch_old (begp:endp))                      ; this%t_ref2m_max_inst_u_patch_old (:)   = nan
+    allocate(this%t_ref2m_min_inst_patch_old   (begp:endp))                      ; this%t_ref2m_min_inst_patch_old   (:)   = nan
+    allocate(this%t_ref2m_min_inst_r_patch_old (begp:endp))                      ; this%t_ref2m_min_inst_r_patch_old (:)   = nan
+    allocate(this%t_ref2m_min_inst_u_patch_old (begp:endp))                      ; this%t_ref2m_min_inst_u_patch_old (:)   = nan
+    
 
   end subroutine InitAllocate
 
@@ -1327,6 +1367,7 @@ contains
     use shr_const_mod    , only : SHR_CONST_CDAY, SHR_CONST_TKFRZ
     use clm_time_manager , only : get_step_size, get_nstep, is_end_curr_day, get_curr_date
     use accumulMod       , only : update_accum_field, extract_accum_field, accumResetVal
+    use spmdMod    , only : masterproc
     !
     ! !ARGUMENTS:
     class(temperature_type)                :: this
@@ -1353,6 +1394,10 @@ contains
     nstep = get_nstep()
     call get_curr_date (year, month, day, secs)
 
+    if (masterproc) then
+     write(iulog,*) "nstep temperature type, accum function", nstep
+    end if
+
     ! Allocate needed dynamic memory for single level pft field
 
     allocate(rbufslp(begp:endp), stat=ier)
@@ -1369,6 +1414,11 @@ contains
     call extract_accum_field ('T_VEG24' , this%t_veg24_patch  , nstep)
     call update_accum_field  ('T_VEG240', rbufslp             , nstep)
     call extract_accum_field ('T_VEG240', this%t_veg240_patch , nstep)
+
+    if (masterproc) then
+     write(iulog,*) "rbufslp for t_veg", this%t_veg_patch(begp)
+     write(iulog,*) "T_VEG24", this%t_veg24_patch(begp) 
+    end if
 
     ! Accumulate and extract TREFAV - hourly average 2m air temperature
     ! Used to compute maximum and minimum of hourly averaged 2m reference

@@ -306,22 +306,6 @@ contains
     use ESMF
     ! adding - sweid
     use clm_instMod
-    !use CanopyStateType ,  only : canopystate_type
-    !use EnergyFluxType  ,  only : energyflux_type
-    !use FrictionVelocityMod , only : frictionvel_type
-    !use LakeStateType   ,  only : lakestate_type
-    !use PhotosynthesisMod ,   only : photosyns_type
-    !use SoilHydrologyType ,   only : soilhydrology_type
-    !use SolarAbsorbedType ,   only : solarabs_type
-    !use TemperatureType ,  only : temperature_type
-    !use SoilStateType   ,  only : soilstate_type
-    !use WaterfluxType   ,  only : waterflux_type
-    !use WaterstateType  ,  only : waterstate_type
-    !use IrrigationMod   ,  only : irrigation_params_type
-    !use AerosolMod      ,  only : aerosol_type
-    !use SurfaceAlbedoType ,   only : surfalb_type
-    !use lnd2atmType     ,  only: lnd2atm_type
-    !use GridcellType , only : grc                
     use LandunitType , only : lun                
     use ColumnType   , only : col                
     use PatchType    , only : patch  
@@ -451,6 +435,11 @@ contains
        tod = tod
        dosend = (seq_timemgr_EClockDateInSync( EClock, ymd, tod))
 
+       if(masterproc) then
+         print *, 'after clm import tod: ', tod
+         print *, 'after clm import: ', atm2lnd_inst%forc_t_not_downscaled_grc(bounds%begg)
+       end if
+
        ! Determine doalb based on nextsw_cday sent from atm model
 
        nstep = get_nstep()
@@ -532,7 +521,8 @@ contains
           first_time=.false.
       else
          if(masterproc) then
-            write(iulog,*)' clm swap orig to old'
+            !write(iulog,*)' clm swap orig to old'
+            print *, 'clm swap orig to old', tod_sync
          end if
 
          ! swap reg = old
@@ -559,15 +549,16 @@ contains
          lakestate_inst%lake_icefrac_col = lakestate_inst%lake_icefrac_col_old
          lakestate_inst%savedtke1_col = lakestate_inst%savedtke1_col_old
          lakestate_inst%ust_lake_col = lakestate_inst%ust_lake_col_old
-         !photosyns_inst%gs_mol_sha_patch = photosyns_inst%gs_mol_sha_patch_old
-         !photosyns_inst%gs_mol_sun_ln_patch = photosyns_inst%gs_mol_sun_ln_patch_old
-         !photosyns_inst%gs_mol_sha_ln_patch = photosyns_inst%gs_mol_sha_ln_patch_old
+         photosyns_inst%gs_mol_sha_patch = photosyns_inst%gs_mol_sha_patch_old
+         photosyns_inst%gs_mol_sun_ln_patch = photosyns_inst%gs_mol_sun_ln_patch_old
+         photosyns_inst%gs_mol_sha_ln_patch = photosyns_inst%gs_mol_sha_ln_patch_old
          photosyns_inst%lnca_patch = photosyns_inst%lnca_patch_old
          photosyns_inst%vcmx25_z_patch = photosyns_inst%vcmx25_z_patch_old
          photosyns_inst%jmx25_z_patch = photosyns_inst%jmx25_z_patch_old
          photosyns_inst%pnlc_z_patch = photosyns_inst%pnlc_z_patch_old
          photosyns_inst%enzs_z_patch = photosyns_inst%enzs_z_patch_old
-         photosyns_inst%fpsn24_patch = photosyns_inst%fpsn24_patch_old
+         photosyns_inst%fpsn_patch = photosyns_inst%fpsn_patch_old
+         !photosyns_inst%fpsn24_patch = photosyns_inst%fpsn24_patch_old
          photosyns_inst%luvcmax25top_patch = photosyns_inst%luvcmax25top_patch_old
          photosyns_inst%lujmax25top_patch = photosyns_inst%lujmax25top_patch_old
          photosyns_inst%lutpu25top_patch = photosyns_inst%lutpu25top_patch_old
@@ -633,9 +624,9 @@ contains
          waterstate_inst%fcansno_patch = waterstate_inst%fcansno_patch_old
          waterstate_inst%snw_rds_col = waterstate_inst%snw_rds_col_old
          waterstate_inst%qaf_lun = waterstate_inst%qaf_lun_old
-         !irrigation_params_inst%n_irrig_steps_left_patch = irrigation_params_inst%n_irrig_steps_left_patch_old
-         !irrigation_params_inst%irrig_rate_patch = irrigation_params_inst%irrig_rate_patch_old
-         !irrigation_params_inst%irrig_rate_demand_patch = irrigation_params_inst%irrig_rate_demand_patch_old
+         irrigation_inst%n_irrig_steps_left_patch = irrigation_inst%n_irrig_steps_left_patch_old ! formerly private
+         irrigation_inst%irrig_rate_patch = irrigation_inst%irrig_rate_patch_old ! formerly private
+         irrigation_inst%irrig_rate_demand_patch = irrigation_inst%irrig_rate_demand_patch_old ! formerly private
          aerosol_inst%mss_bcpho_col = aerosol_inst%mss_bcpho_col_old
          aerosol_inst%mss_bcphi_col = aerosol_inst%mss_bcphi_col_old
          aerosol_inst%mss_ocpho_col = aerosol_inst%mss_ocpho_col_old
@@ -678,11 +669,11 @@ contains
          surfalb_inst%flx_absiv_col = surfalb_inst%flx_absiv_col_old
          surfalb_inst%flx_absin_col = surfalb_inst%flx_absin_col_old
 
-         atm2lnd_inst%forc_solad_grc = atm2lnd_inst%forc_solad_grc_old
-         atm2lnd_inst%forc_solai_grc = atm2lnd_inst%forc_solai_grc_old
-         atm2lnd_inst%forc_po2_grc = atm2lnd_inst%forc_po2_grc_old
-         atm2lnd_inst%forc_pco2_grc = atm2lnd_inst%forc_pco2_grc_old
-         atm2lnd_inst%forc_pbot_downscaled_col = atm2lnd_inst%forc_pbot_downscaled_col_old
+         !atm2lnd_inst%forc_solad_grc = atm2lnd_inst%forc_solad_grc_old
+         !atm2lnd_inst%forc_solai_grc = atm2lnd_inst%forc_solai_grc_old
+         !atm2lnd_inst%forc_po2_grc = atm2lnd_inst%forc_po2_grc_old
+         !atm2lnd_inst%forc_pco2_grc = atm2lnd_inst%forc_pco2_grc_old
+         !atm2lnd_inst%forc_pbot_downscaled_col = atm2lnd_inst%forc_pbot_downscaled_col_old
          atm2lnd_inst%forc_flood_grc = atm2lnd_inst%forc_flood_grc_old
          
          ! reset landunit levels
@@ -696,13 +687,46 @@ contains
          col%dz = col%dz_old
          col%z = col%z_old
          col%zi = col%zi_old
+
+         temperature_inst%t_veg24_patch = temperature_inst%t_veg24_patch_old
+         temperature_inst%t_veg240_patch = temperature_inst%t_veg240_patch_old
+         temperature_inst%t_a10_patch = temperature_inst%t_a10_patch_old
+         temperature_inst%t_ref2m_min_patch = temperature_inst%t_ref2m_min_patch_old
+         temperature_inst%t_ref2m_min_r_patch = temperature_inst%t_ref2m_min_r_patch_old
+         temperature_inst%t_ref2m_min_u_patch = temperature_inst%t_ref2m_min_u_patch_old
+         temperature_inst%t_ref2m_max_patch = temperature_inst%t_ref2m_max_patch_old
+         temperature_inst%t_ref2m_max_r_patch = temperature_inst%t_ref2m_max_r_patch_old
+         temperature_inst%t_ref2m_max_u_patch = temperature_inst%t_ref2m_max_u_patch_old
+         temperature_inst%t_ref2m_min_inst_patch = temperature_inst%t_ref2m_min_inst_patch_old
+         temperature_inst%t_ref2m_min_inst_r_patch = temperature_inst%t_ref2m_min_inst_r_patch_old
+         temperature_inst%t_ref2m_min_inst_u_patch = temperature_inst%t_ref2m_min_inst_u_patch_old
+         temperature_inst%t_ref2m_max_inst_patch = temperature_inst%t_ref2m_max_inst_patch_old
+         temperature_inst%t_ref2m_max_inst_r_patch = temperature_inst%t_ref2m_max_inst_r_patch_old
+         temperature_inst%t_ref2m_max_inst_u_patch = temperature_inst%t_ref2m_max_inst_u_patch_old
+         temperature_inst%t_veg10_day_patch = temperature_inst%t_veg10_day_patch_old
+         temperature_inst%t_veg_day_patch = temperature_inst%t_veg_day_patch_old
+         temperature_inst%t_veg10_night_patch = temperature_inst%t_veg10_night_patch_old
+         temperature_inst%t_veg_night_patch = temperature_inst%t_veg_night_patch_old
+         temperature_inst%t_a10_patch = temperature_inst%t_a10_patch_old
+         canopystate_inst%fsun24_patch = canopystate_inst%fsun24_patch_old
+         canopystate_inst%fsun240_patch = canopystate_inst%fsun240_patch_old
+         canopystate_inst%elai240_patch = canopystate_inst%elai240_patch_old
+         energyflux_inst%btran_min_patch = energyflux_inst%btran_min_patch_old
+         energyflux_inst%btran_min_inst_patch = energyflux_inst%btran_min_inst_patch_old
+         solarabs_inst%par240d_z_patch = solarabs_inst%par240d_z_patch_old
+         solarabs_inst%par24d_z_patch = solarabs_inst%par24d_z_patch_old
+         solarabs_inst%par240x_z_patch = solarabs_inst%par240x_z_patch_old
+         solarabs_inst%par24x_z_patch = solarabs_inst%par24x_z_patch_old
+
+
       end if
       do_restart=.FALSE.
     end if
   
   if (mod(tod_sync,21600)==0 .and. .not. do_restart) then
    if(masterproc) then
-      write(iulog,*)' clm swap old to orig'
+      !write(iulog,*)' clm swap old to orig'
+      print *, 'clm swap old to orig', tod_sync
    end if
    
    ! swap old = reg
@@ -728,15 +752,16 @@ contains
    lakestate_inst%lake_icefrac_col_old = lakestate_inst%lake_icefrac_col
    lakestate_inst%savedtke1_col_old = lakestate_inst%savedtke1_col
    lakestate_inst%ust_lake_col_old = lakestate_inst%ust_lake_col
-   !photosyns_inst%gs_mol_sha_patch_old = photosyns_inst%gs_mol_sha_patch
-   !photosyns_inst%gs_mol_sun_ln_patch_old = photosyns_inst%gs_mol_sun_ln_patch
-   !photosyns_inst%gs_mol_sha_ln_patch_old = photosyns_inst%gs_mol_sha_ln_patch
+   photosyns_inst%gs_mol_sha_patch_old = photosyns_inst%gs_mol_sha_patch ! formerly private
+   photosyns_inst%gs_mol_sun_ln_patch_old = photosyns_inst%gs_mol_sun_ln_patch ! formerly private
+   photosyns_inst%gs_mol_sha_ln_patch_old = photosyns_inst%gs_mol_sha_ln_patch ! formerly private
    photosyns_inst%lnca_patch_old = photosyns_inst%lnca_patch
    photosyns_inst%vcmx25_z_patch_old = photosyns_inst%vcmx25_z_patch
    photosyns_inst%jmx25_z_patch_old = photosyns_inst%jmx25_z_patch
    photosyns_inst%pnlc_z_patch_old = photosyns_inst%pnlc_z_patch
    photosyns_inst%enzs_z_patch_old = photosyns_inst%enzs_z_patch
-   photosyns_inst%fpsn24_patch_old = photosyns_inst%fpsn24_patch
+   photosyns_inst%fpsn_patch_old = photosyns_inst%fpsn_patch 
+   !photosyns_inst%fpsn24_patch_old = photosyns_inst%fpsn24_patch
    photosyns_inst%luvcmax25top_patch_old = photosyns_inst%luvcmax25top_patch
    photosyns_inst%lujmax25top_patch_old = photosyns_inst%lujmax25top_patch
    photosyns_inst%lutpu25top_patch_old = photosyns_inst%lutpu25top_patch
@@ -802,9 +827,9 @@ contains
    waterstate_inst%fcansno_patch_old = waterstate_inst%fcansno_patch
    waterstate_inst%snw_rds_col_old = waterstate_inst%snw_rds_col
    waterstate_inst%qaf_lun_old = waterstate_inst%qaf_lun
-   !irrigation_params_inst%n_irrig_steps_left_patch_old = irrigation_params_inst%n_irrig_steps_left_patch
-   !irrigation_params_inst%irrig_rate_patch_old = irrigation_params_inst%irrig_rate_patch
-   !irrigation_params_inst%irrig_rate_demand_patch_old = irrigation_params_inst%irrig_rate_demand_patch
+   irrigation_inst%n_irrig_steps_left_patch_old = irrigation_inst%n_irrig_steps_left_patch
+   irrigation_inst%irrig_rate_patch_old = irrigation_inst%irrig_rate_patch
+   irrigation_inst%irrig_rate_demand_patch_old = irrigation_inst%irrig_rate_demand_patch
    aerosol_inst%mss_bcpho_col_old = aerosol_inst%mss_bcpho_col
    aerosol_inst%mss_bcphi_col_old = aerosol_inst%mss_bcphi_col
    aerosol_inst%mss_ocpho_col_old = aerosol_inst%mss_ocpho_col
@@ -847,11 +872,11 @@ contains
    surfalb_inst%flx_absiv_col_old = surfalb_inst%flx_absiv_col
    surfalb_inst%flx_absin_col_old = surfalb_inst%flx_absin_col
 
-   atm2lnd_inst%forc_solad_grc_old = atm2lnd_inst%forc_solad_grc
-   atm2lnd_inst%forc_solai_grc_old = atm2lnd_inst%forc_solai_grc
-   atm2lnd_inst%forc_po2_grc_old = atm2lnd_inst%forc_po2_grc
-   atm2lnd_inst%forc_pco2_grc_old = atm2lnd_inst%forc_pco2_grc
-   atm2lnd_inst%forc_pbot_downscaled_col_old = atm2lnd_inst%forc_pbot_downscaled_col
+   !atm2lnd_inst%forc_solad_grc_old = atm2lnd_inst%forc_solad_grc
+   !atm2lnd_inst%forc_solai_grc_old = atm2lnd_inst%forc_solai_grc
+   !atm2lnd_inst%forc_po2_grc_old = atm2lnd_inst%forc_po2_grc
+   !atm2lnd_inst%forc_pco2_grc_old = atm2lnd_inst%forc_pco2_grc
+   !atm2lnd_inst%forc_pbot_downscaled_col_old = atm2lnd_inst%forc_pbot_downscaled_col
    atm2lnd_inst%forc_flood_grc_old = atm2lnd_inst%forc_flood_grc
 
    lun%wtgcell_old = lun%wtgcell
@@ -864,6 +889,36 @@ contains
    col%dz_old = col%dz
    col%z_old = col%z
    col%zi_old = col%zi
+
+   temperature_inst%t_veg24_patch_old = temperature_inst%t_veg24_patch
+   temperature_inst%t_veg240_patch_old = temperature_inst%t_veg240_patch
+   temperature_inst%t_a10_patch_old = temperature_inst%t_a10_patch
+   temperature_inst%t_ref2m_min_patch_old = temperature_inst%t_ref2m_min_patch
+   temperature_inst%t_ref2m_min_r_patch_old = temperature_inst%t_ref2m_min_r_patch
+   temperature_inst%t_ref2m_min_u_patch_old = temperature_inst%t_ref2m_min_u_patch
+   temperature_inst%t_ref2m_max_patch_old = temperature_inst%t_ref2m_max_patch
+   temperature_inst%t_ref2m_max_r_patch_old = temperature_inst%t_ref2m_max_r_patch
+   temperature_inst%t_ref2m_max_u_patch_old = temperature_inst%t_ref2m_max_u_patch
+   temperature_inst%t_ref2m_min_inst_patch_old = temperature_inst%t_ref2m_min_inst_patch
+   temperature_inst%t_ref2m_min_inst_r_patch_old = temperature_inst%t_ref2m_min_inst_r_patch
+   temperature_inst%t_ref2m_min_inst_u_patch_old = temperature_inst%t_ref2m_min_inst_u_patch
+   temperature_inst%t_ref2m_max_inst_patch_old = temperature_inst%t_ref2m_max_inst_patch
+   temperature_inst%t_ref2m_max_inst_r_patch_old = temperature_inst%t_ref2m_max_inst_r_patch
+   temperature_inst%t_ref2m_max_inst_u_patch_old = temperature_inst%t_ref2m_max_inst_u_patch
+   temperature_inst%t_veg10_day_patch_old = temperature_inst%t_veg10_day_patch
+   temperature_inst%t_veg_day_patch_old = temperature_inst%t_veg_day_patch
+   temperature_inst%t_veg10_night_patch_old = temperature_inst%t_veg10_night_patch
+   temperature_inst%t_veg_night_patch_old = temperature_inst%t_veg_night_patch
+   temperature_inst%t_a10_patch_old = temperature_inst%t_a10_patch
+   canopystate_inst%fsun24_patch_old = canopystate_inst%fsun24_patch
+   canopystate_inst%fsun240_patch_old = canopystate_inst%fsun240_patch
+   canopystate_inst%elai240_patch_old = canopystate_inst%elai240_patch
+   energyflux_inst%btran_min_patch_old = energyflux_inst%btran_min_patch
+   energyflux_inst%btran_min_inst_patch_old = energyflux_inst%btran_min_inst_patch
+   solarabs_inst%par240d_z_patch_old = solarabs_inst%par240d_z_patch
+   solarabs_inst%par24d_z_patch_old = solarabs_inst%par24d_z_patch
+   solarabs_inst%par240x_z_patch_old = solarabs_inst%par240x_z_patch
+   solarabs_inst%par24x_z_patch_old = solarabs_inst%par24x_z_patch
 
    do_restart=.TRUE.
   end if
