@@ -355,7 +355,7 @@ contains
     character(len=32), parameter    :: sub = "lnd_run_mct"
 
     ! adding - sweid
-    logical,save :: do_restart = .true.
+    logical,save :: do_restart = .false.
     logical,save :: first_time = .true.
     
 !
@@ -517,9 +517,9 @@ contains
     ! TOOD: point to stuff
 
     if (mod(tod_sync,21600)==10800 .AND. do_restart) then
-      if (first_time) then
-          first_time=.false.
-      else
+      ! if (first_time) then
+      !     first_time=.false.
+      ! else
          if(masterproc) then
             !write(iulog,*)' clm swap orig to old'
             print *, 'clm swap orig to old', tod_sync
@@ -558,7 +558,7 @@ contains
          photosyns_inst%pnlc_z_patch = photosyns_inst%pnlc_z_patch_old
          photosyns_inst%enzs_z_patch = photosyns_inst%enzs_z_patch_old
          photosyns_inst%fpsn_patch = photosyns_inst%fpsn_patch_old
-         !photosyns_inst%fpsn24_patch = photosyns_inst%fpsn24_patch_old
+         !photosyns_inst%fpsn24_patch = photosyns_inst%fpsn24_patch_old  !
          photosyns_inst%luvcmax25top_patch = photosyns_inst%luvcmax25top_patch_old
          photosyns_inst%lujmax25top_patch = photosyns_inst%lujmax25top_patch_old
          photosyns_inst%lutpu25top_patch = photosyns_inst%lutpu25top_patch_old
@@ -669,12 +669,15 @@ contains
          surfalb_inst%flx_absiv_col = surfalb_inst%flx_absiv_col_old
          surfalb_inst%flx_absin_col = surfalb_inst%flx_absin_col_old
 
-         !atm2lnd_inst%forc_solad_grc = atm2lnd_inst%forc_solad_grc_old
-         !atm2lnd_inst%forc_solai_grc = atm2lnd_inst%forc_solai_grc_old
-         !atm2lnd_inst%forc_po2_grc = atm2lnd_inst%forc_po2_grc_old
-         !atm2lnd_inst%forc_pco2_grc = atm2lnd_inst%forc_pco2_grc_old
-         !atm2lnd_inst%forc_pbot_downscaled_col = atm2lnd_inst%forc_pbot_downscaled_col_old
+         atm2lnd_inst%forc_solad_grc = atm2lnd_inst%forc_solad_grc_old ! 
+         atm2lnd_inst%forc_solai_grc = atm2lnd_inst%forc_solai_grc_old !
+         atm2lnd_inst%forc_po2_grc = atm2lnd_inst%forc_po2_grc_old !
+         atm2lnd_inst%forc_pco2_grc = atm2lnd_inst%forc_pco2_grc_old ! 
+         atm2lnd_inst%forc_pbot_downscaled_col = atm2lnd_inst%forc_pbot_downscaled_col_old !
          atm2lnd_inst%forc_flood_grc = atm2lnd_inst%forc_flood_grc_old
+
+         lnd2atm_inst%albd_grc = lnd2atm_inst%albd_grc_old
+         lnd2atm_inst%albi_grc = lnd2atm_inst%albi_grc_old
          
          ! reset landunit levels
          lun%wtgcell = lun%wtgcell_old
@@ -719,7 +722,7 @@ contains
          solarabs_inst%par24x_z_patch = solarabs_inst%par24x_z_patch_old
 
 
-      end if
+      ! end if ! first time
       do_restart=.FALSE.
     end if
   
@@ -761,7 +764,7 @@ contains
    photosyns_inst%pnlc_z_patch_old = photosyns_inst%pnlc_z_patch
    photosyns_inst%enzs_z_patch_old = photosyns_inst%enzs_z_patch
    photosyns_inst%fpsn_patch_old = photosyns_inst%fpsn_patch 
-   !photosyns_inst%fpsn24_patch_old = photosyns_inst%fpsn24_patch
+   !photosyns_inst%fpsn24_patch_old = photosyns_inst%fpsn24_patch ! 
    photosyns_inst%luvcmax25top_patch_old = photosyns_inst%luvcmax25top_patch
    photosyns_inst%lujmax25top_patch_old = photosyns_inst%lujmax25top_patch
    photosyns_inst%lutpu25top_patch_old = photosyns_inst%lutpu25top_patch
@@ -872,12 +875,15 @@ contains
    surfalb_inst%flx_absiv_col_old = surfalb_inst%flx_absiv_col
    surfalb_inst%flx_absin_col_old = surfalb_inst%flx_absin_col
 
-   !atm2lnd_inst%forc_solad_grc_old = atm2lnd_inst%forc_solad_grc
-   !atm2lnd_inst%forc_solai_grc_old = atm2lnd_inst%forc_solai_grc
-   !atm2lnd_inst%forc_po2_grc_old = atm2lnd_inst%forc_po2_grc
-   !atm2lnd_inst%forc_pco2_grc_old = atm2lnd_inst%forc_pco2_grc
-   !atm2lnd_inst%forc_pbot_downscaled_col_old = atm2lnd_inst%forc_pbot_downscaled_col
+   atm2lnd_inst%forc_solad_grc_old = atm2lnd_inst%forc_solad_grc !
+   atm2lnd_inst%forc_solai_grc_old = atm2lnd_inst%forc_solai_grc !
+   atm2lnd_inst%forc_po2_grc_old = atm2lnd_inst%forc_po2_grc !
+   atm2lnd_inst%forc_pco2_grc_old = atm2lnd_inst%forc_pco2_grc !
+   atm2lnd_inst%forc_pbot_downscaled_col_old = atm2lnd_inst%forc_pbot_downscaled_col !
    atm2lnd_inst%forc_flood_grc_old = atm2lnd_inst%forc_flood_grc
+
+   lnd2atm_inst%albd_grc_old = lnd2atm_inst%albd_grc
+   lnd2atm_inst%albi_grc_old = lnd2atm_inst%albi_grc
 
    lun%wtgcell_old = lun%wtgcell
    col%wtgcell_old = col%wtgcell
